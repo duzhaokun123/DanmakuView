@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/a"
+        android:title="DEFAULT"/>
+    <item android:id="@+id/b"
+        android:title="DEFAULT_BOLD"/>
+    <item android:id="@+id/c"
+        android:title="SANS_SERIF"/>
+    <item android:id="@+id/d"
+        android:title="SERIF"/>
+    <item android:id="@+id/e"
+        android:title="MONOSPACE"/>
+</menu>
