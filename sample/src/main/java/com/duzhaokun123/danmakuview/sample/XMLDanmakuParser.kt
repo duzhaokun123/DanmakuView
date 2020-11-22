@@ -141,7 +141,6 @@ class XMLDanmakuParser(inputStream: InputStream) : DanmakuParser {
                 danmaku.translationStartDelay = translationStartDelay
                 danmaku.beginAlpha = beginAlpha
                 danmaku.endAlpha = endAlpha
-                danmaku.alphaDouration = alphaDuration
                 if (textArray.size >= 12) {
                     if (textArray[11].isNullOrEmpty().not() && textArray[11].toBoolean()) {
                         danmaku.textShadowColor = Color.TRANSPARENT

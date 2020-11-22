@@ -24,12 +24,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        btn_hide.setOnClickListener { dv.visibility = View.INVISIBLE }
+        btn_show.setOnClickListener { dv.visibility = View.VISIBLE }
         btn_send.setOnClickListener {
             dv.addDanmaku(R2LDanmaku().apply {
                 offset = dv.conductedTime
                 text = "danmaku"
                 borderColor = Color.GREEN
-
             })
         }
         btn_pause.setOnClickListener { dv.pause() }

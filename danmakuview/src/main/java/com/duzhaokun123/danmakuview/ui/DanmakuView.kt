@@ -175,7 +175,7 @@ class DanmakuView @JvmOverloads constructor(
                     delay(deltaTime)
                 }
 
-                while (drawRunning && drawPaused && drawOnceResume.not()) {
+                while (drawPaused && drawRunning && drawOnceResume.not()) {
                     delay(1)
                 }
                 if (drawOnceResume) drawOnceResume = false

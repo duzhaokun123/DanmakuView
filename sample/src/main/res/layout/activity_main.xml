@@ -19,6 +19,20 @@
         app:flexWrap="wrap">
 
         <Button
+            android:id="@+id/btn_hide"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="hide" />
+
+        <Button
+            android:id="@+id/btn_show"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="show" />
+
+        <Button
             android:id="@+id/btn_send"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"

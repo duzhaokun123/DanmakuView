@@ -50,6 +50,5 @@ dependencies {
     //flexbox-layout
     implementation 'com.google.android:flexbox:2.0.1'
 
-    implementation 'javax.xml.stream:stax-api:1.0'
     implementation 'org.codehaus.woodstox:woodstox-core-asl:4.4.1'
 }
