@@ -29,7 +29,6 @@ class DanmakuView @JvmOverloads constructor(
             setBackgroundColor(Color.TRANSPARENT)
         } else {
             holder.addCallback(this)
-            setZOrderOnTop(true)
             holder.setFormat(PixelFormat.TRANSLUCENT)
         }
     }
@@ -106,6 +105,7 @@ class DanmakuView @JvmOverloads constructor(
 
     fun destroy() {
         isDestroied = true
+        holder.removeCallback(this)
     }
 
     @JvmOverloads

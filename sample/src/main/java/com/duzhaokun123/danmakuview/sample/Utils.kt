@@ -11,14 +11,6 @@ fun String.toFloatOrDefault(default: Float = 0F): Float {
     }
 }
 
-fun String.toLongOrDefault(default: Long = 0L): Long {
-    return try {
-        this.toLong()
-    } catch (e: Exception) {
-        default
-    }
-}
-
 class SimpleValueOnSeekBarChangeListener(
     private val onValueChange: (value: Int) -> Unit
 ) : SeekBar.OnSeekBarChangeListener {
