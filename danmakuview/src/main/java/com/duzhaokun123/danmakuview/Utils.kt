@@ -3,10 +3,7 @@ package com.duzhaokun123.danmakuview
 import android.graphics.*
 import com.duzhaokun123.danmakuview.danmaku.Danmaku
 import com.duzhaokun123.danmakuview.model.DanmakuConfig
-import com.duzhaokun123.danmakuview.interfaces.DanmakuParser
-import com.duzhaokun123.danmakuview.model.Danmakus
 import com.duzhaokun123.danmakuview.danmaku.LineDanmaku
-import com.duzhaokun123.danmakuview.ui.DanmakuView
 import kotlin.math.abs
 import kotlin.math.sqrt
 
@@ -18,15 +15,6 @@ private val cleanPaint by lazy {
 
 fun Canvas.clean() {
     this.drawPaint(cleanPaint)
-}
-
-inline fun DanmakuView.parse(
-    crossinline parse: () -> Danmakus,
-    noinline onEnd: ((danmakus: Danmakus) -> Unit)? = null
-) {
-    parse(object : DanmakuParser {
-        override fun parse() = parse()
-    }, onEnd)
 }
 
 fun LineDanmaku.checkStaticLineDanmakuHit(

@@ -5,7 +5,12 @@ import com.duzhaokun123.danmakuview.Value
 import com.duzhaokun123.danmakuview.getDistance
 import com.duzhaokun123.danmakuview.model.DanmakuConfig
 
-class SpecialDanmaku : Danmaku() {
+class BiliSpecialDanmaku : Danmaku() {
+    companion object {
+        const val BILI_PLAYER_WIDTH = 682.0F
+        const val BILI_PLAYER_HEIGHT = 438.0F
+    }
+
     var lines: Array<String>? = null
 
     var rotationZ = 0F
@@ -29,7 +34,6 @@ class SpecialDanmaku : Danmaku() {
     var endAlpha = 0
     val deltaAlpha
         get() = endAlpha - beginAlpha
-    var alphaDouration = 0L
 
     var linePaths: Array<LinePath?>? = null
 
@@ -40,9 +44,9 @@ class SpecialDanmaku : Danmaku() {
     override fun onBuildCache(danmakuConfig: DanmakuConfig) {
         val text = (if (lines != null) lines else arrayOf(text))!!
         var paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = this@SpecialDanmaku.textColor
+            color = this@BiliSpecialDanmaku.textColor
             alpha = Value.ALPHA_MAX
-            textSize = this@SpecialDanmaku.textSize
+            textSize = this@BiliSpecialDanmaku.textSize
             typeface = danmakuConfig.typeface
             isUnderlineText = underline
             setShadowLayer(
@@ -89,19 +93,20 @@ class SpecialDanmaku : Danmaku() {
         drawWidth: Int, drawHeight: Int, progress: Float,
         danmakuConfig: DanmakuConfig, line: Int
     ): RectF? {
-        // TODO: 20-11-21 Z 旋转, 路径
+        // TODO: 20-11-21 Z 旋转, 路径, 延迟变换
         if (cache == null) onBuildCache(danmakuConfig)
         val bitmap = cache ?: return null
         bitmapPaint.alpha = beginAlpha + (deltaAlpha * progress).toInt()
         val x = beginX + deltaX * progress
         val y = beginY + deltaY * progress
+        val (drawX, drawY) = getDrawXY(x, y, drawWidth, drawHeight)
         return if (rotationY == 0F) {
-            canvas.drawBitmap(bitmap, x, y, bitmapPaint)
-            RectF(x, y, x + bitmap.width, y + bitmap.height)
+            canvas.drawBitmap(bitmap, drawX, drawY, bitmapPaint)
+            RectF(drawX, drawY, drawX + bitmap.width, drawY + bitmap.height)
         } else {
             val matrix = Matrix()
             matrix.postRotate(rotationY)
-            matrix.postTranslate(x, y)
+            matrix.postTranslate(drawX, drawY)
             canvas.drawBitmap(bitmap, matrix, bitmapPaint)
             val rect = RectF()
             matrix.mapRect(rect)
@@ -152,6 +157,12 @@ class SpecialDanmaku : Danmaku() {
                 lastLine = line
             }
         }
+    }
+
+    private fun getDrawXY(x: Float, y: Float, drawWidth: Int, drawHeight: Int): Pair<Float, Float> {
+        val drawX = x / BILI_PLAYER_WIDTH * drawWidth
+        val drawY = y / BILI_PLAYER_HEIGHT * drawHeight
+        return drawX to drawY
     }
 
     class LinePath {

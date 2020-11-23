@@ -1,18 +1,16 @@
 # DanmakuView
 
-普通的`DanmakuView`, 支持右至左滚动, 左至右滚动, 顶部, 底部弹幕, 可自定义弹幕(继承`Danmaku`类或`LineDanmaku`类), 比没得用好
+普通的`DanmakuView`, 支持右至左滚动, 左至右滚动, 顶部, 底部弹幕, B站形式高级弹幕, 可自定义弹幕(继承`Danmaku`类或`LineDanmaku`类), 比没得用好
 
 ## 使用
 
 见`sample`
 
 ## TODO
-- 高级弹幕定位使用相对坐标
 - 弹幕点击事件
 
 ## BUG
 - 二次改变大小后不重绘
-- 高级弹幕错位
 
 ## 下载
 

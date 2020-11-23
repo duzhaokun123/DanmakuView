@@ -2,7 +2,7 @@ package com.duzhaokun123.danmakuview.interfaces
 
 import com.duzhaokun123.danmakuview.danmaku.Danmaku
 
-interface DanmakuBlocker {
+fun interface DanmakuBlocker {
     /**
      * @return true: 屏蔽
      */

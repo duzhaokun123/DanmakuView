@@ -5,7 +5,7 @@ import android.text.TextUtils
 import android.util.Log
 import com.duzhaokun123.danmakuview.Value
 import com.duzhaokun123.danmakuview.danmaku.SimpleDanmakuFactory
-import com.duzhaokun123.danmakuview.danmaku.SpecialDanmaku
+import com.duzhaokun123.danmakuview.danmaku.BiliSpecialDanmaku
 import com.duzhaokun123.danmakuview.interfaces.DanmakuParser
 import com.duzhaokun123.danmakuview.model.Danmakus
 import org.json.JSONArray
@@ -18,9 +18,6 @@ import javax.xml.stream.XMLStreamConstants
 class XMLDanmakuParser(inputStream: InputStream) : DanmakuParser {
     companion object {
         const val TAG = "XMLDanmakuParser"
-
-        const val BILI_PLAYER_WIDTH = 682.0F
-        const val BILI_PLAYER_HEIGHT = 438.0F
     }
 
     private val simpleDanmakuFactory by lazy { SimpleDanmakuFactory() }
@@ -60,8 +57,8 @@ class XMLDanmakuParser(inputStream: InputStream) : DanmakuParser {
                                 (-0x1000000L or tokens.nextToken().toLong() and -0x1).toInt()
                             danmaku.textColor = color
                             danmaku.textShadowColor =
-                                if (color <= android.graphics.Color.BLACK) android.graphics.Color.WHITE else android.graphics.Color.BLACK
-                            if (danmaku is SpecialDanmaku) initialSpecialDanmakuData(danmaku)
+                                if (color <= Color.BLACK) Color.WHITE else Color.BLACK
+                            if (danmaku is BiliSpecialDanmaku) initialSpecialDanmakuData(danmaku)
 //                        initialSpecailDanmakuData(danmaku, mContext, mDispScaleX, mDispScaleY)
                             danmakus.add(danmaku)
                         }
@@ -74,8 +71,8 @@ class XMLDanmakuParser(inputStream: InputStream) : DanmakuParser {
 
     override fun parse() = danmakus
 
-    private fun initialSpecialDanmakuData(danmaku: SpecialDanmaku) {
-        val text = danmaku.text.trim { it <= ' ' }
+    private fun initialSpecialDanmakuData(danmakuBili: BiliSpecialDanmaku) {
+        val text = danmakuBili.text.trim { it <= ' ' }
         if (text.startsWith('[')) {
             var textArray: Array<String?>? = null
             try {
@@ -88,8 +85,8 @@ class XMLDanmakuParser(inputStream: InputStream) : DanmakuParser {
                 e.printStackTrace()
             }
             if (textArray != null && textArray.size >= 5 && textArray[4].isNullOrEmpty().not()) {
-                danmaku.text = textArray[4]!!
-                danmaku.fillText()
+                danmakuBili.text = textArray[4]!!
+                danmakuBili.fillText()
                 var beginX = textArray[0]!!.toFloatOrDefault()
                 var beginY = textArray[1]!!.toFloatOrDefault()
                 var endX = beginX
@@ -119,31 +116,31 @@ class XMLDanmakuParser(inputStream: InputStream) : DanmakuParser {
 
                 }
                 if (textArray[0]!!.contains('.')) {
-                    beginX *= BILI_PLAYER_WIDTH
+                    beginX *= BiliSpecialDanmaku.BILI_PLAYER_WIDTH
                 }
                 if (textArray[1]!!.contains('.')) {
-                    beginY *= BILI_PLAYER_HEIGHT
+                    beginY *= BiliSpecialDanmaku.BILI_PLAYER_HEIGHT
                 }
                 if (textArray.size >= 8 && textArray[7]!!.contains('.')) {
-                    endX *= BILI_PLAYER_WIDTH
+                    endX *= BiliSpecialDanmaku.BILI_PLAYER_WIDTH
                 }
                 if (textArray.size >= 9 && textArray[8]!!.contains('.')) {
-                    endY *= BILI_PLAYER_HEIGHT
+                    endY *= BiliSpecialDanmaku.BILI_PLAYER_HEIGHT
                 }
-                danmaku.duration = alphaDuration
-                danmaku.rotationZ = rotateZ
-                danmaku.rotationY = rotateY
-                danmaku.beginX = beginX
-                danmaku.beginY = beginY
-                danmaku.endX = endX
-                danmaku.endY = endY
-                danmaku.translationDuration = translationDuration
-                danmaku.translationStartDelay = translationStartDelay
-                danmaku.beginAlpha = beginAlpha
-                danmaku.endAlpha = endAlpha
+                danmakuBili.duration = alphaDuration
+                danmakuBili.rotationZ = rotateZ
+                danmakuBili.rotationY = rotateY
+                danmakuBili.beginX = beginX
+                danmakuBili.beginY = beginY
+                danmakuBili.endX = endX
+                danmakuBili.endY = endY
+                danmakuBili.translationDuration = translationDuration
+                danmakuBili.translationStartDelay = translationStartDelay
+                danmakuBili.beginAlpha = beginAlpha
+                danmakuBili.endAlpha = endAlpha
                 if (textArray.size >= 12) {
                     if (textArray[11].isNullOrEmpty().not() && textArray[11].toBoolean()) {
-                        danmaku.textShadowColor = Color.TRANSPARENT
+                        danmakuBili.textShadowColor = Color.TRANSPARENT
                     }
                 }
                 if (textArray.size >= 13) {
@@ -151,7 +148,7 @@ class XMLDanmakuParser(inputStream: InputStream) : DanmakuParser {
                 }
                 if (textArray.size >= 14) {
                     // Linear.easeIn or Quadratic.easeOut
-                    danmaku.isQuadraticEaseOut = "0" == textArray[13]
+                    danmakuBili.isQuadraticEaseOut = "0" == textArray[13]
                 }
                 if (textArray.size >= 15) {
                     // 路径数据
@@ -169,7 +166,7 @@ class XMLDanmakuParser(inputStream: InputStream) : DanmakuParser {
                                         points[i][1] = pointArray[1].toFloatOrDefault()
                                     }
                                 }
-                                danmaku.setLinePathData(points)
+                                danmakuBili.setLinePathData(points)
                             }
                         }
                     }
@@ -184,7 +181,7 @@ class XMLDanmakuParser(inputStream: InputStream) : DanmakuParser {
             4 -> SimpleDanmakuFactory.Type.BOTTOM_DANMAKU
             5 -> SimpleDanmakuFactory.Type.TOP_DANMAKU
             6 -> SimpleDanmakuFactory.Type.L2R_DANMAKU
-            7 -> SimpleDanmakuFactory.Type.SPECIAL_DANMAKU
+            7 -> SimpleDanmakuFactory.Type.BILI_SPECIAL_DANMAKU
             else -> {
                 Log.e(TAG, "unknowen type $this, R2L_DANMAKU as default")
                 SimpleDanmakuFactory.Type.R2L_DANMAKU

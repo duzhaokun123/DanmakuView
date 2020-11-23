@@ -102,6 +102,7 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.hide()
 
         dv.drawDebugInfo = true
+        dv.zOnTop = true
         parserXMLDanmaku(resources.openRawResource(R.raw.danmaku))
     }
 

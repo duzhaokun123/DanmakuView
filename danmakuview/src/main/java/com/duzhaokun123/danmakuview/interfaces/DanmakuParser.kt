@@ -2,7 +2,7 @@ package com.duzhaokun123.danmakuview.interfaces
 
 import com.duzhaokun123.danmakuview.model.Danmakus
 
-interface DanmakuParser {
+fun interface DanmakuParser {
     object EMPTY: DanmakuParser {
         override fun parse() = Danmakus()
     }

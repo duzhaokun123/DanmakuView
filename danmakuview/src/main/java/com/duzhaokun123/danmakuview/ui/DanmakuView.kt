@@ -59,6 +59,17 @@ class DanmakuView @JvmOverloads constructor(
      */
     var speed = 1F
 
+    /**
+     * 提升 Z轴
+     * false: 会完全挡住下面的普通 View, 但不会挡住其他 Surface
+     * true: 不透明部分会挡住在上和下的所有 View
+     */
+    var zOnTop = false
+        set(value) {
+            field = value
+            setZOrderOnTop(value)
+        }
+
     override fun surfaceCreated(holder: SurfaceHolder) {
         drawRunning = true
         launchDrawJob()
@@ -152,6 +163,7 @@ class DanmakuView @JvmOverloads constructor(
             )
         }
     }
+    
 
     fun addDanmaku(danmaku: Danmaku) = danmakus.add(danmaku)
     fun addDanmakus(danmakus: Collection<Danmaku>) = this.danmakus.addAll(danmakus)
