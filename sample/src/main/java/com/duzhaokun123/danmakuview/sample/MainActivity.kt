@@ -12,7 +12,7 @@ import androidx.annotation.MenuRes
 import androidx.appcompat.app.AppCompatActivity
 import com.duzhaokun123.danmakuview.danmaku.R2LDanmaku
 import com.duzhaokun123.danmakuview.interfaces.DanmakuParser
-import kotlinx.android.synthetic.main.activity_main.*
+import com.duzhaokun123.danmakuview.sample.databinding.ActivityMainBinding
 import java.io.InputStream
 
 class MainActivity : AppCompatActivity() {
@@ -20,71 +20,75 @@ class MainActivity : AppCompatActivity() {
         const val REQUEST_OPEN_XML_DANMAKU = 1
     }
 
+    private lateinit var baseBinding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        baseBinding = ActivityMainBinding.inflate(layoutInflater).apply {
+            setContentView(root)
+        }
 
-        btn_hide.setOnClickListener { dv.visibility = View.INVISIBLE }
-        btn_show.setOnClickListener { dv.visibility = View.VISIBLE }
-        btn_send.setOnClickListener {
-            dv.addDanmaku(R2LDanmaku().apply {
-                offset = dv.conductedTime
+        baseBinding.btnHide.setOnClickListener { baseBinding.dv.visibility = View.INVISIBLE }
+        baseBinding.btnShow.setOnClickListener { baseBinding.dv.visibility = View.VISIBLE }
+        baseBinding.btnSend.setOnClickListener {
+            baseBinding.dv.addDanmaku(R2LDanmaku().apply {
+                offset = baseBinding.dv.conductedTime
                 text = "danmaku"
                 borderColor = Color.GREEN
             })
         }
-        btn_pause.setOnClickListener { dv.pause() }
-        btn_resume.setOnClickListener { dv.resume() }
-        btn_start.setOnClickListener { dv.start() }
-        btn_buildCache.setOnClickListener { dv.buildCache() }
-        btn_cleanCache.setOnClickListener { dv.cleanCache() }
-        btn_drawOnce.setOnClickListener { dv.drawOnce() }
-        sb_speed.setOnSeekBarChangeListener(SimpleValueOnSeekBarChangeListener { value ->
-            dv.speed = (value - 200) / 100F
+        baseBinding.btnPause.setOnClickListener { baseBinding.dv.pause() }
+        baseBinding.btnResume.setOnClickListener { baseBinding.dv.resume() }
+        baseBinding.btnStart.setOnClickListener { baseBinding.dv.start() }
+        baseBinding.btnBuildCache.setOnClickListener { baseBinding.dv.buildCache() }
+        baseBinding.btnCleanCache.setOnClickListener { baseBinding.dv.cleanCache() }
+        baseBinding.btnDrawOnce.setOnClickListener { baseBinding.dv.drawOnce() }
+        baseBinding.sbSpeed.setOnSeekBarChangeListener(SimpleValueOnSeekBarChangeListener { value ->
+            baseBinding.dv.speed = (value - 200) / 100F
         })
-        sb_durationCoeff.setOnSeekBarChangeListener(SimpleValueOnSeekBarChangeListener { value ->
+        baseBinding.sbDurationCoeff.setOnSeekBarChangeListener(SimpleValueOnSeekBarChangeListener { value ->
             if (value != 0) {
                 val durationCoeff = value / 100F
-                dv.danmakuConfig.durationCoeff = durationCoeff
-                tv_durationCoeff.text = durationCoeff.toString()
+                baseBinding.dv.danmakuConfig.durationCoeff = durationCoeff
+                baseBinding.tvDurationCoeff.text = durationCoeff.toString()
             }
         })
-        sb_textSizeCoeff.setOnSeekBarChangeListener(SimpleValueOnSeekBarChangeListener { value ->
+        baseBinding.sbTextSizeCoeff.setOnSeekBarChangeListener(SimpleValueOnSeekBarChangeListener { value ->
             if (value != 0) {
                 val textSizeCoeff = value / 100F
-                dv.danmakuConfig.textSizeCoeff = textSizeCoeff
-                tv_textSizeCoeff.text = textSizeCoeff.toString()
+                baseBinding.dv.danmakuConfig.textSizeCoeff = textSizeCoeff
+                baseBinding.tvTextSizeCoeff.text = textSizeCoeff.toString()
             }
         })
-        sb_lineHeight.setOnSeekBarChangeListener(SimpleValueOnSeekBarChangeListener { value ->
+        baseBinding.sbLineHeight.setOnSeekBarChangeListener(SimpleValueOnSeekBarChangeListener { value ->
             val lineHeight = value + 20
-            dv.danmakuConfig.lineHeight = lineHeight
-            tv_lineHeight.text = lineHeight.toString()
+            baseBinding.dv.danmakuConfig.lineHeight = lineHeight
+            baseBinding.tvLineHeight.text = lineHeight.toString()
         })
-        sb_marginTop.setOnSeekBarChangeListener(SimpleValueOnSeekBarChangeListener { value ->
-            dv.danmakuConfig.marginTop = value
-            tv_marginTop.text = value.toString()
+        baseBinding.sbMarginTop.setOnSeekBarChangeListener(SimpleValueOnSeekBarChangeListener { value ->
+            baseBinding.dv.danmakuConfig.marginTop = value
+            baseBinding.tvMarginTop.text = value.toString()
         })
-        sb_marginBottom.setOnSeekBarChangeListener(SimpleValueOnSeekBarChangeListener { value ->
-            dv.danmakuConfig.marginBottom = value
-            tv_marginBottom.text = value.toString()
+        baseBinding.sbMarginBottom.setOnSeekBarChangeListener(SimpleValueOnSeekBarChangeListener { value ->
+            baseBinding.dv.danmakuConfig.marginBottom = value
+            baseBinding.tvMarginBottom.text = value.toString()
         })
-        sc_allowCovering.setOnCheckedChangeListener { _, isChecked ->
-            dv.danmakuConfig.allowCovering = isChecked
+        baseBinding.scAllowCovering.setOnCheckedChangeListener { _, isChecked ->
+            baseBinding.dv.danmakuConfig.allowCovering = isChecked
         }
-        btn_typeface.setOnClickListener {
+        baseBinding.btnTypeface.setOnClickListener {
             showPopupMenu(R.menu.typeface, it) { item ->
                 when (item.itemId) {
-                    R.id.a -> dv.danmakuConfig.typeface = Typeface.DEFAULT
-                    R.id.b -> dv.danmakuConfig.typeface = Typeface.DEFAULT_BOLD
-                    R.id.c -> dv.danmakuConfig.typeface = Typeface.SANS_SERIF
-                    R.id.d -> dv.danmakuConfig.typeface = Typeface.SERIF
-                    R.id.e -> dv.danmakuConfig.typeface = Typeface.MONOSPACE
+                    R.id.a -> baseBinding.dv.danmakuConfig.typeface = Typeface.DEFAULT
+                    R.id.b -> baseBinding.dv.danmakuConfig.typeface = Typeface.DEFAULT_BOLD
+                    R.id.c -> baseBinding.dv.danmakuConfig.typeface = Typeface.SANS_SERIF
+                    R.id.d -> baseBinding.dv.danmakuConfig.typeface = Typeface.SERIF
+                    R.id.e -> baseBinding.dv.danmakuConfig.typeface = Typeface.MONOSPACE
                 }
                 true
             }
         }
-        btn_parser.setOnClickListener {
+        baseBinding.btnParser.setOnClickListener {
             showPopupMenu(R.menu.parser, it) { item ->
                 when (item.itemId) {
                     R.id.inb -> parserXMLDanmaku(resources.openRawResource(R.raw.danmaku))
@@ -93,7 +97,7 @@ class MainActivity : AppCompatActivity() {
                             addCategory(Intent.CATEGORY_OPENABLE)
                             type = "text/xml"
                         }, REQUEST_OPEN_XML_DANMAKU)
-                    R.id.empty -> dv.parse(DanmakuParser.EMPTY)
+                    R.id.empty -> baseBinding.dv.parse(DanmakuParser.EMPTY)
                 }
                 true
             }
@@ -101,8 +105,8 @@ class MainActivity : AppCompatActivity() {
 
         supportActionBar?.hide()
 
-        dv.drawDebugInfo = true
-        dv.zOnTop = true
+        baseBinding.dv.drawDebugInfo = true
+        baseBinding.dv.zOnTop = true
         parserXMLDanmaku(resources.openRawResource(R.raw.danmaku))
     }
 
@@ -113,7 +117,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        dv.destroy()
+        baseBinding.dv.destroy()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -141,6 +145,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun parserXMLDanmaku(inputStream: InputStream) {
-        dv.parse(XMLDanmakuParser(inputStream)) { inputStream.close() }
+        baseBinding.dv.parse(XMLDanmakuParser(inputStream)) { inputStream.close() }
     }
 }
