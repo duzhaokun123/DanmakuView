@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         baseBinding.btnShow.setOnClickListener { baseBinding.dv.visibility = View.VISIBLE }
         baseBinding.btnSend.setOnClickListener {
             baseBinding.dv.addDanmaku(R2LDanmaku().apply {
-                offset = baseBinding.dv.conductedTime
+                offset = baseBinding.dv.conductedTimeMs
                 text = "danmaku"
                 borderColor = Color.GREEN
             })
