@@ -97,6 +97,7 @@ class MainActivity : AppCompatActivity() {
                             addCategory(Intent.CATEGORY_OPENABLE)
                             type = "text/xml"
                         }, REQUEST_OPEN_XML_DANMAKU)
+                    R.id.special -> baseBinding.dv.parse(SpecialDanmakuTestParser)
                     R.id.empty -> baseBinding.dv.parse(DanmakuParser.EMPTY)
                 }
                 true

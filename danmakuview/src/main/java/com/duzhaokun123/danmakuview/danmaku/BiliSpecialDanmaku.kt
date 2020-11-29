@@ -5,6 +5,7 @@ import com.duzhaokun123.danmakuview.Value
 import com.duzhaokun123.danmakuview.getDistance
 import com.duzhaokun123.danmakuview.model.DanmakuConfig
 
+@Deprecated("use SpecialDanmaku")
 class BiliSpecialDanmaku : Danmaku() {
     companion object {
         const val BILI_PLAYER_WIDTH = 682.0F
