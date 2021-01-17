@@ -3,6 +3,7 @@ package com.duzhaokun123.danmakuview.danmaku
 import android.graphics.*
 import com.duzhaokun123.danmakuview.Value
 import com.duzhaokun123.danmakuview.model.DanmakuConfig
+import com.duzhaokun123.danmakuview.soft
 
 abstract class Danmaku {
     /**
@@ -53,7 +54,7 @@ abstract class Danmaku {
     /**
      * 绘制用缓存
      */
-    var cache: Bitmap? = null
+    var cache: Bitmap? by soft { null }
 
     /**
      * 透明度
