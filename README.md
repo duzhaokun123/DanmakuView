@@ -16,7 +16,24 @@
 
 ### jitpack
 
-TODO
+LastVersion [![LastVersion](https://jitpack.io/v/duzhaokun123/DanmakuView.svg?style=flat-square)](https://jitpack.io/#duzhaokun123/DanmakuView)                                                                                        
+
+1. Add it in your root `build.gradle` at the end of repositories:
+```groovy
+allprojects {
+    repositories {
+        //...
+        maven { url 'https://jitpack.io' }
+    }
+}
+```
+
+2. Add the dependency
+```groovy
+dependencies {
+    implementation 'com.github.duzhaokun123:DanmakuView:#LastVersion'
+}
+```
 
 ## Thanks
 
@@ -25,3 +42,5 @@ TODO
 [DanmakuFlameMaster](https://github.com/bilibili/DanmakuFlameMaster)
 
 [flexbox-layout](https://github.com/google/flexbox-layout)
+
+[jitpack.io](https://jitpack.io)

@@ -69,3 +69,6 @@ fun PointF.getDistance(p: PointF): Float {
     val y = abs(this.y - p.y)
     return sqrt(x * x + y * y)
 }
+
+operator fun PointF.component1() = this.x
+operator fun PointF.component2() = this.y

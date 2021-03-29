@@ -1,9 +1,9 @@
 package com.duzhaokun123.danmakuview.danmaku
 
 import android.graphics.*
-import androidx.core.graphics.component1
-import androidx.core.graphics.component2
 import com.duzhaokun123.danmakuview.Value
+import com.duzhaokun123.danmakuview.component1
+import com.duzhaokun123.danmakuview.component2
 import com.duzhaokun123.danmakuview.model.DanmakuConfig
 
 class SpecialDanmaku : Danmaku() {
