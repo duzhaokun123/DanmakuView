@@ -9,6 +9,7 @@ import android.view.SurfaceView
 import com.duzhaokun123.danmakuview.clean
 import com.duzhaokun123.danmakuview.danmaku.*
 import com.duzhaokun123.danmakuview.interfaces.DanmakuParser
+import com.duzhaokun123.danmakuview.interfaces.DanmakuParser.EMPTY.parse
 import com.duzhaokun123.danmakuview.model.DanmakuConfig
 import com.duzhaokun123.danmakuview.model.Danmakus
 import com.duzhaokun123.danmakuview.model.ShowingDanmakuInfo
@@ -39,6 +40,7 @@ class DanmakuView @JvmOverloads constructor(
     private var drawRunning = false
     private var drawPaused = true
     private var drawOnceResume = false
+    private var parseJob: Job? = null
 
     var danmakus = Danmakus()
 
@@ -130,16 +132,26 @@ class DanmakuView @JvmOverloads constructor(
     fun destroy() {
         isDestroied = true
         holder.removeCallback(this)
+        parseJob?.cancel()
     }
 
     @JvmOverloads
     fun parse(parser: DanmakuParser, onEnd: ((danmakus: Danmakus) -> Unit)? = null) {
-        GlobalScope.launch(Dispatchers.Default) {
-            danmakus = parser.parse()
-            drawPaused = true
-            conductedTimeNs = 0
-            drawOnceResume = true
-            onEnd?.invoke(danmakus)
+        parse({parser.parse()}, onEnd)
+    }
+
+    fun parse(parser: (CoroutineScope.() -> Danmakus) , onEnd: ((danmakus: Danmakus) -> Unit)? = null) {
+        parseJob?.cancel()
+        parseJob = GlobalScope.launch(Dispatchers.Default) {
+            val a = parser()
+            if (isActive) {
+                danmakus = a
+                drawPaused = true
+                conductedTimeNs = 0
+                drawOnceResume = true
+                onEnd?.invoke(danmakus)
+            }
+            parseJob = null
         }
     }
 

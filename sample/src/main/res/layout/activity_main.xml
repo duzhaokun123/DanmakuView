@@ -23,49 +23,49 @@
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="hide" />
+            android:text="隐藏" />
 
         <Button
             android:id="@+id/btn_show"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="show" />
+            android:text="显示" />
 
         <Button
             android:id="@+id/btn_send"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="send" />
+            android:text="发送" />
 
         <Button
             android:id="@+id/btn_parser"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="parse" />
+            android:text="解析" />
 
         <Button
             android:id="@+id/btn_pause"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="pause" />
+            android:text="暂停" />
 
         <Button
             android:id="@+id/btn_resume"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="resume" />
+            android:text="恢复" />
 
         <Button
             android:id="@+id/btn_start"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="start" />
+            android:text="开始" />
 
         <Button
             android:id="@+id/btn_buildCache"
@@ -115,7 +115,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="speed"
+                android:text="速度"
                 android:textAllCaps="true"
                 android:textColor="?attr/colorPrimary"
                 android:textSize="14sp"

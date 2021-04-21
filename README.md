@@ -31,7 +31,7 @@ allprojects {
 2. Add the dependency
 ```groovy
 dependencies {
-    implementation 'com.github.duzhaokun123:DanmakuView:#LastVersion'
+    implementation 'com.github.duzhaokun123:DanmakuView:$LastVersion'
 }
 ```
 
