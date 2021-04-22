@@ -5,14 +5,18 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.PopupMenu
 import androidx.annotation.MenuRes
 import androidx.appcompat.app.AppCompatActivity
 import com.duzhaokun123.danmakuview.danmaku.R2LDanmaku
+import com.duzhaokun123.danmakuview.danmaku.TopDanmaku
 import com.duzhaokun123.danmakuview.interfaces.DanmakuParser
+import com.duzhaokun123.danmakuview.model.Danmakus
 import com.duzhaokun123.danmakuview.sample.databinding.ActivityMainBinding
+import kotlinx.coroutines.delay
 import java.io.InputStream
 
 class MainActivity : AppCompatActivity() {
@@ -99,6 +103,19 @@ class MainActivity : AppCompatActivity() {
                         }, REQUEST_OPEN_XML_DANMAKU)
                     R.id.special -> baseBinding.dv.parse(SpecialDanmakuTestParser)
                     R.id.empty -> baseBinding.dv.parse(DanmakuParser.EMPTY)
+                    R.id.later_10s -> baseBinding.dv.parse {
+                        (1..10).forEach {
+                            delay(1000)
+                            Log.d("later10sp", "$it")
+                        }
+                        Danmakus().apply {
+                            add(TopDanmaku().apply {
+                                offset = 0
+                                duration = 2000
+                                text = "Danmaku"
+                            })
+                        }
+                    }
                 }
                 true
             }

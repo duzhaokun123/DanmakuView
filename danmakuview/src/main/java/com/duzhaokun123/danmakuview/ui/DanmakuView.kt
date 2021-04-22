@@ -9,7 +9,6 @@ import android.view.SurfaceView
 import com.duzhaokun123.danmakuview.clean
 import com.duzhaokun123.danmakuview.danmaku.*
 import com.duzhaokun123.danmakuview.interfaces.DanmakuParser
-import com.duzhaokun123.danmakuview.interfaces.DanmakuParser.EMPTY.parse
 import com.duzhaokun123.danmakuview.model.DanmakuConfig
 import com.duzhaokun123.danmakuview.model.Danmakus
 import com.duzhaokun123.danmakuview.model.ShowingDanmakuInfo
@@ -140,9 +139,14 @@ class DanmakuView @JvmOverloads constructor(
         parse({parser.parse()}, onEnd)
     }
 
-    fun parse(parser: (CoroutineScope.() -> Danmakus) , onEnd: ((danmakus: Danmakus) -> Unit)? = null) {
+    fun parse(parser: (suspend CoroutineScope.() -> Danmakus)) {
+        parse(parser, null)
+    }
+
+    fun parse(parser: (suspend CoroutineScope.() -> Danmakus) , onEnd: ((danmakus: Danmakus) -> Unit)?) {
         parseJob?.cancel()
-        parseJob = GlobalScope.launch(Dispatchers.Default) {
+        var thisJob: Job? = null
+        thisJob = GlobalScope.launch(Dispatchers.Default) {
             val a = parser()
             if (isActive) {
                 danmakus = a
@@ -151,8 +155,10 @@ class DanmakuView @JvmOverloads constructor(
                 drawOnceResume = true
                 onEnd?.invoke(danmakus)
             }
-            parseJob = null
+            if (parseJob === thisJob)
+                parseJob = null
         }
+        parseJob = thisJob
     }
 
     fun drawOnce() {
