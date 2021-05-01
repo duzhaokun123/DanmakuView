@@ -15,7 +15,7 @@ import com.duzhaokun123.danmakuview.model.ShowingDanmakuInfo
 import kotlinx.coroutines.*
 
 class DanmakuView @JvmOverloads constructor(
-        context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : SurfaceView(context, attrs, defStyleAttr), SurfaceHolder.Callback {
 
     companion object {
@@ -136,14 +136,17 @@ class DanmakuView @JvmOverloads constructor(
 
     @JvmOverloads
     fun parse(parser: DanmakuParser, onEnd: ((danmakus: Danmakus) -> Unit)? = null) {
-        parse({parser.parse()}, onEnd)
+        parse({ parser.parse() }, onEnd)
     }
 
     fun parse(parser: (suspend CoroutineScope.() -> Danmakus)) {
         parse(parser, null)
     }
 
-    fun parse(parser: (suspend CoroutineScope.() -> Danmakus) , onEnd: ((danmakus: Danmakus) -> Unit)?) {
+    fun parse(
+        parser: (suspend CoroutineScope.() -> Danmakus),
+        onEnd: ((danmakus: Danmakus) -> Unit)?
+    ) {
         parseJob?.cancel()
         var thisJob: Job? = null
         thisJob = GlobalScope.launch(Dispatchers.Default) {
@@ -189,8 +192,8 @@ class DanmakuView @JvmOverloads constructor(
             }
             val endTime = System.currentTimeMillis()
             Log.d(
-                    TAG,
-                    "buildCache: $count of ${danmakus.size} danmakus in ${endTime - startTime} ms"
+                TAG,
+                "buildCache: $count of ${danmakus.size} danmakus in ${endTime - startTime} ms"
             )
         }
     }
@@ -229,11 +232,14 @@ class DanmakuView @JvmOverloads constructor(
 
     private fun drawDanamkus() {
         val maxLine =
-                (drawHeight - danmakuConfig.marginTop - danmakuConfig.marginBottom) / danmakuConfig.lineHeight
+            (drawHeight - danmakuConfig.marginTop - danmakuConfig.marginBottom) / danmakuConfig.lineHeight
         if (maxLine < 1) return
 
         val canvas = try {
-            holder.lockHardwareCanvas()
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
+                holder.lockHardwareCanvas()
+            else
+                holder.lockCanvas()
         } catch (e: IllegalStateException) {
             e.printStackTrace()
             holder.lockCanvas()
@@ -258,14 +264,14 @@ class DanmakuView @JvmOverloads constructor(
                 willDrawDanmakus.add(danmaku to progress)
             }
         }
-        willDrawDanmakus.removeIf { (danmaku, progress) ->
+        willDrawDanmakus.removeAll { (danmaku, progress) ->
             val re: Boolean
             val olsShowingDanmaku = findOldShowingDanmaku(oldShowingDanmakus, danmaku)
             re = if (olsShowingDanmaku != null) {
                 drawDanmaku(
-                        canvas, maxLine,
-                        danmaku, progress, olsShowingDanmaku.line,
-                        willShowingDanmakus
+                    canvas, maxLine,
+                    danmaku, progress, olsShowingDanmaku.line,
+                    willShowingDanmakus
                 )
                 true
             } else false
@@ -280,11 +286,11 @@ class DanmakuView @JvmOverloads constructor(
                     for (willShowingDanmaku in willShowingDanmakus) {
                         if (line == willShowingDanmaku.line && danmaku.javaClass == willShowingDanmaku.danmaku.javaClass) {
                             if (danmaku.willHit(
-                                            willShowingDanmaku.danmaku,
-                                            drawWidth,
-                                            drawHeight,
-                                            danmakuConfig
-                                    )
+                                    willShowingDanmaku.danmaku,
+                                    drawWidth,
+                                    drawHeight,
+                                    danmakuConfig
+                                )
                             ) {
                                 line++
                                 moved = true
@@ -308,7 +314,7 @@ class DanmakuView @JvmOverloads constructor(
     }
 
     private fun findOldShowingDanmaku(
-            oldShowingDanmakus: Set<ShowingDanmakuInfo>, danmaku: Danmaku
+        oldShowingDanmakus: Set<ShowingDanmakuInfo>, danmaku: Danmaku
     ): ShowingDanmakuInfo? {
         var re: ShowingDanmakuInfo? = null
         oldShowingDanmakus.forEach { info ->
@@ -319,9 +325,9 @@ class DanmakuView @JvmOverloads constructor(
     }
 
     private fun drawDanmaku(
-            canvas: Canvas, maxLine: Int,
-            danmaku: Danmaku, progress: Float, line: Int,
-            willShowingDanmakus: MutableSet<ShowingDanmakuInfo>
+        canvas: Canvas, maxLine: Int,
+        danmaku: Danmaku, progress: Float, line: Int,
+        willShowingDanmakus: MutableSet<ShowingDanmakuInfo>
     ) {
         if (line == 0) {
             danmaku.onDraw(canvas, drawWidth, drawHeight, progress, danmakuConfig, 0)?.let {
@@ -345,12 +351,12 @@ class DanmakuView @JvmOverloads constructor(
 
     private fun drawDebug(canvas: Canvas) {
         canvas.drawText(
-                "conductedTimeNs = $conductedTimeNs, speed = $speed, size = ${drawWidth}x$drawHeight",
-                20F, drawHeight - 100F, debugPaint
+            "conductedTimeNs = $conductedTimeNs, speed = $speed, size = ${drawWidth}x$drawHeight",
+            20F, drawHeight - 100F, debugPaint
         )
         canvas.drawText(
-                "showingCount = ${showingDanmakus.size}, count = ${danmakus.size}",
-                20F, drawHeight - 50F, debugPaint
+            "showingCount = ${showingDanmakus.size}, count = ${danmakus.size}",
+            20F, drawHeight - 50F, debugPaint
         )
     }
 }

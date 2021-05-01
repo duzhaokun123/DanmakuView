@@ -59,7 +59,7 @@ class SpecialDanmaku : Danmaku() {
         width += (textSize / 3).toInt()
         height += (textSize / 3).toInt()
         if (width == 0 || height == 0) return
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888, true)
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         var nextY = 0F
         text.forEachIndexed { i, s ->

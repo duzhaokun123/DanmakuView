@@ -30,7 +30,7 @@ abstract class LineDanmaku : Danmaku() {
         val width = (bounders.width() + textSize / 3).toInt()
         val height = (bounders.height() + textSize / 3).toInt()
         if (width == 0 || height == 0) return
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888, true)
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         canvas.drawText(text, 0F, bounders.height().toFloat(), paint)
         if (borderColor != 0) {
