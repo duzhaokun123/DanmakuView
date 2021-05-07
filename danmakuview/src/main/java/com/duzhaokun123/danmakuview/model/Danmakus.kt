@@ -3,7 +3,7 @@ package com.duzhaokun123.danmakuview.model
 import com.duzhaokun123.danmakuview.danmaku.Danmaku
 
 class Danmakus : Collection<Danmaku> {
-    private var danmakuSet = mutableSetOf<Danmaku>()
+    private var danmakuSet = mutableListOf<Danmaku>()
 
     override val size
         get() = danmakuSet.size

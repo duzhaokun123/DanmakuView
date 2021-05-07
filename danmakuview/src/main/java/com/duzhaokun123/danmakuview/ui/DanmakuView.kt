@@ -54,7 +54,7 @@ class DanmakuView @JvmOverloads constructor(
      */
     var conductedTimeNs = 0L
         private set
-    var showingDanmakus = setOf<ShowingDanmakuInfo>()
+    var showingDanmakus = listOf<ShowingDanmakuInfo>()
         private set
     var isDestroied = false
         private set
@@ -247,8 +247,8 @@ class DanmakuView @JvmOverloads constructor(
 
         canvas.clean()
         val oldShowingDanmakus = showingDanmakus
-        val willShowingDanmakus = mutableSetOf<ShowingDanmakuInfo>()
-        val willDrawDanmakus = mutableSetOf<Pair<Danmaku, Float>>()
+        val willShowingDanmakus = mutableListOf<ShowingDanmakuInfo>()
+        val willDrawDanmakus = mutableListOf<Pair<Danmaku, Float>>()
         val conductedTime = conductedTimeMs
         danmakus.forEach { danmaku ->
             if (danmaku.visibility.not()) return@forEach
@@ -314,7 +314,7 @@ class DanmakuView @JvmOverloads constructor(
     }
 
     private fun findOldShowingDanmaku(
-        oldShowingDanmakus: Set<ShowingDanmakuInfo>, danmaku: Danmaku
+        oldShowingDanmakus: List<ShowingDanmakuInfo>, danmaku: Danmaku
     ): ShowingDanmakuInfo? {
         var re: ShowingDanmakuInfo? = null
         oldShowingDanmakus.forEach { info ->
@@ -327,7 +327,7 @@ class DanmakuView @JvmOverloads constructor(
     private fun drawDanmaku(
         canvas: Canvas, maxLine: Int,
         danmaku: Danmaku, progress: Float, line: Int,
-        willShowingDanmakus: MutableSet<ShowingDanmakuInfo>
+        willShowingDanmakus: MutableList<ShowingDanmakuInfo>
     ) {
         if (line == 0) {
             danmaku.onDraw(canvas, drawWidth, drawHeight, progress, danmakuConfig, 0)?.let {
