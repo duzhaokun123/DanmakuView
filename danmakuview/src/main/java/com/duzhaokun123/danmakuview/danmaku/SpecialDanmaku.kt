@@ -124,7 +124,7 @@ class SpecialDanmaku : Danmaku() {
             matrix.postRotate(zr)
             matrix.postTranslate(drawX, drawY)
             canvas.drawBitmap(bitmap, matrix, bitmapPaint)
-            val rect = RectF()
+            val rect = RectF(0f, 0f, bitmap.width.toFloat(), bitmap.height.toFloat())
             matrix.mapRect(rect)
             rect
         }

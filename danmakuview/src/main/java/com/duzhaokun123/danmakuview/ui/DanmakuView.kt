@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.util.Log
+import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import com.duzhaokun123.danmakuview.clean
@@ -40,6 +41,7 @@ class DanmakuView @JvmOverloads constructor(
     private var drawPaused = true
     private var drawOnceResume = false
     private var parseJob: Job? = null
+    private var touchedDanmaku: Danmaku? = null
 
     var danmakus = Danmakus()
 
@@ -332,12 +334,14 @@ class DanmakuView @JvmOverloads constructor(
         if (line == 0) {
             danmaku.onDraw(canvas, drawWidth, drawHeight, progress, danmakuConfig, 0)?.let {
                 willShowingDanmakus.add(ShowingDanmakuInfo(danmaku, it, 0, progress))
+                danmaku.rectF = it
             }
         } else if (line < maxLine || danmakuConfig.allowCovering) {
             var drawLine = line % maxLine
             if (drawLine == 0) drawLine = maxLine
             danmaku.onDraw(canvas, drawWidth, drawHeight, progress, danmakuConfig, drawLine)?.let {
                 willShowingDanmakus.add(ShowingDanmakuInfo(danmaku, it, line, progress))
+                danmaku.rectF = it
             }
         }
     }
@@ -358,5 +362,25 @@ class DanmakuView @JvmOverloads constructor(
             "showingCount = ${showingDanmakus.size}, count = ${danmakus.size}",
             20F, drawHeight - 50F, debugPaint
         )
+    }
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        when(event?.action) {
+            MotionEvent.ACTION_DOWN -> {
+                for (danmaku in danmakus) {
+                    if (danmaku.onClickListener != null && danmaku.isTouched(event.x, event.y)) {
+                        this.touchedDanmaku = danmaku
+                        return true
+                    }
+                }
+            }
+            MotionEvent.ACTION_UP -> {
+                touchedDanmaku?.let {
+                    it.onClickListener?.invoke()
+                    touchedDanmaku = null
+                }
+            }
+        }
+        return super.onTouchEvent(event)
     }
 }

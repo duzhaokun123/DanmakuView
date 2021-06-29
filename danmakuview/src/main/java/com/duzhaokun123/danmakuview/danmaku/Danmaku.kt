@@ -1,6 +1,9 @@
 package com.duzhaokun123.danmakuview.danmaku
 
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.RectF
 import com.duzhaokun123.danmakuview.Value
 import com.duzhaokun123.danmakuview.model.DanmakuConfig
 import com.duzhaokun123.danmakuview.soft
@@ -67,6 +70,8 @@ abstract class Danmaku {
     var visibility = true
 
     var tag: Any? = null
+    var rectF: RectF?= null
+    var onClickListener: (() -> Unit)? = null
 
     /**
      * 可缓存
@@ -90,4 +95,12 @@ abstract class Danmaku {
     override fun toString(): String {
         return text
     }
+
+    /**
+     * 手指触摸屏幕的时候，判断此弹幕是否被触摸选中
+     * @param x [android.view.MotionEvent.getX]
+     * @param y [android.view.MotionEvent.getY]
+     */
+    fun isTouched(x: Float, y: Float) = rectF?.contains(x, y) ?: false
+
 }

@@ -1,6 +1,7 @@
 package com.duzhaokun123.danmakuview.sample
 
 import android.graphics.PointF
+import android.util.Log
 import com.duzhaokun123.danmakuview.Value
 import com.duzhaokun123.danmakuview.danmaku.SpecialDanmaku
 import com.duzhaokun123.danmakuview.interfaces.DanmakuParser
@@ -8,6 +9,8 @@ import com.duzhaokun123.danmakuview.model.Danmakus
 import kotlin.random.Random
 
 object SpecialDanmakuTestParser : DanmakuParser {
+    private const val TAG = "SpecialDanmaku"
+
     override fun parse(): Danmakus {
         val danmakus = Danmakus()
         danmakus.add(SpecialDanmaku().apply {
@@ -16,6 +19,9 @@ object SpecialDanmakuTestParser : DanmakuParser {
             text = "高级弹幕"
             textSize = 50F
             offset = 0
+            onClickListener = {
+                Log.i(TAG, text)
+            }
         })
         danmakus.add(SpecialDanmaku().apply {
             keyframes[0F] = Triple(PointF(0.2F, 0.2F), 0F, Value.ALPHA_MAX)
@@ -23,6 +29,9 @@ object SpecialDanmakuTestParser : DanmakuParser {
             text = "旋转------"
             textSize = 50F
             offset = 0
+            onClickListener = {
+                Log.i(TAG, text)
+            }
         })
         danmakus.add(SpecialDanmaku().apply {
             keyframes[0F] = Triple(PointF(0.8F, 0.8F), 0F, Value.ALPHA_MAX)
@@ -31,6 +40,9 @@ object SpecialDanmakuTestParser : DanmakuParser {
             text = "变 Alpha ******"
             textSize = 50F
             offset = 0
+            onClickListener = {
+                Log.i(TAG, text)
+            }
         })
         danmakus.add(SpecialDanmaku().apply {
             keyframes[0F] = Triple(PointF(0.0F, 0.0F), 0F, Value.ALPHA_MAX)
@@ -42,6 +54,9 @@ object SpecialDanmakuTestParser : DanmakuParser {
             text = "===移动==="
             textSize = 50F
             offset = 0
+            onClickListener = {
+                Log.i(TAG, text)
+            }
         })
         danmakus.add(SpecialDanmaku().apply {
             text = "多行\n行1\n行2\n行3"
@@ -50,6 +65,9 @@ object SpecialDanmakuTestParser : DanmakuParser {
             keyframes[1F] = Triple(PointF(0.2F, 0.8F), 0F, Value.ALPHA_MAX)
             textSize = 50F
             offset = 0
+            onClickListener = {
+                Log.i(TAG, text)
+            }
         })
         danmakus.add(SpecialDanmaku().apply {
             text = "随机生成"
@@ -70,6 +88,9 @@ object SpecialDanmakuTestParser : DanmakuParser {
             }
             keyframes[0F] = createRandomFrame()
             keyframes[1F] = createRandomFrame()
+            onClickListener = {
+                Log.i(TAG, text)
+            }
         })
         return danmakus
     }

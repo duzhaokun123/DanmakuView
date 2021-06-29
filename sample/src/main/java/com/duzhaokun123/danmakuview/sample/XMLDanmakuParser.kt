@@ -4,8 +4,8 @@ import android.graphics.Color
 import android.text.TextUtils
 import android.util.Log
 import com.duzhaokun123.danmakuview.Value
-import com.duzhaokun123.danmakuview.danmaku.SimpleDanmakuFactory
 import com.duzhaokun123.danmakuview.danmaku.BiliSpecialDanmaku
+import com.duzhaokun123.danmakuview.danmaku.SimpleDanmakuFactory
 import com.duzhaokun123.danmakuview.interfaces.DanmakuParser
 import com.duzhaokun123.danmakuview.model.Danmakus
 import org.json.JSONArray
@@ -60,6 +60,9 @@ class XMLDanmakuParser(inputStream: InputStream) : DanmakuParser {
                                 if (color <= Color.BLACK) Color.WHITE else Color.BLACK
                             if (danmaku is BiliSpecialDanmaku) initialSpecialDanmakuData(danmaku)
 //                        initialSpecailDanmakuData(danmaku, mContext, mDispScaleX, mDispScaleY)
+                            danmaku.onClickListener = {
+                                Log.i(TAG, text)
+                            }
                             danmakus.add(danmaku)
                         }
                     }
