@@ -125,6 +125,9 @@ class MainActivity : AppCompatActivity() {
 
         baseBinding.dv.drawDebugInfo = true
         baseBinding.dv.zOnTop = true
+        baseBinding.dv.onDanmakuClickListener = { danmaku ->
+            Log.d("MainActivity", "$danmaku")
+        }
         parserXMLDanmaku(resources.openRawResource(R.raw.danmaku))
     }
 

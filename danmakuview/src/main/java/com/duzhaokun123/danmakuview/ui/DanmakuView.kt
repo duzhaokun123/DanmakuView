@@ -1,9 +1,11 @@
 package com.duzhaokun123.danmakuview.ui
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.util.Log
+import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import com.duzhaokun123.danmakuview.clean
@@ -64,6 +66,7 @@ class DanmakuView @JvmOverloads constructor(
         get() = visibility == VISIBLE
     var drawDebugInfo = false
     var danmakuConfig = defaultDanmakuConfig
+    var onDanmakuClickListener: ((danmaku: Danmaku) -> Unit)? = null
 
     /**
      * -1: 可以倒放
@@ -203,6 +206,28 @@ class DanmakuView @JvmOverloads constructor(
     fun addDanmakus(danmakus: Collection<Danmaku>) = this.danmakus.addAll(danmakus)
     fun removeDanmaku(danmaku: Danmaku) = danmakus.remove(danmaku)
     fun removeDanmakus() = danmakus.removeAll()
+
+    private var clickedDanmaku: Danmaku? = null
+
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        onDanmakuClickListener ?: return super.onTouchEvent(event)
+        when(event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                showingDanmakus.forEach { sd ->
+                    if (sd.rect.contains(event.x, event.y)) {
+                        clickedDanmaku = sd.danmaku
+                        return true
+                    }
+                }
+            }
+            MotionEvent.ACTION_UP -> {
+                clickedDanmaku?.let { onDanmakuClickListener?.invoke(it) }
+                clickedDanmaku = null
+            }
+        }
+        return super.onTouchEvent(event)
+    }
 
     private fun launchDrawJob() {
         if (drawJob != null) return

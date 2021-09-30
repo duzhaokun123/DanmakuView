@@ -9,7 +9,8 @@
         android:theme="@style/Theme.DanmakuViewSample">
         <activity
             android:name="com.duzhaokun123.danmakuview.sample.MainActivity"
-            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|uiMode">
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|uiMode"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

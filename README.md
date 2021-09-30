@@ -6,9 +6,6 @@
 
 见`sample`
 
-## TODO
-- 弹幕点击事件
-
 ## BUG
 - 二次改变大小后不重绘
 
@@ -44,3 +41,5 @@ dependencies {
 [flexbox-layout](https://github.com/google/flexbox-layout)
 
 [jitpack.io](https://jitpack.io)
+
+[nuck](https://github.com/nukc) 在点击事件上的帮助

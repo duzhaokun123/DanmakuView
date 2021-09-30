@@ -5,14 +5,13 @@ plugins {
 }
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "30.0.3"
+    compileSdkVersion 31
 
     defaultConfig {
         minSdkVersion 17
-        targetSdkVersion 30
-        versionCode 5
-        versionName "0.1.5"
+        targetSdkVersion 31
+        versionCode 6
+        versionName "0.1.6"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -37,7 +36,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     //kotlinx-coroutines
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
 }
 
 afterEvaluate {
@@ -48,7 +47,7 @@ afterEvaluate {
 
                 groupId = 'com.github.duzhaokun123'
                 artifactId = 'DanmakuView'
-                version = '0.1.5'
+                version = '0.1.6'
             }
         }
     }
