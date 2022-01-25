@@ -7,5 +7,6 @@ data class ShowingDanmakuInfo(
     val danmaku: Danmaku,
     val rect: RectF,
     val line: Int,
-    val progress: Float
+    val progress: Float,
+    val pool: Int
 )

@@ -5,10 +5,11 @@ import com.duzhaokun123.danmakuview.Value
 import com.duzhaokun123.danmakuview.danmaku.SpecialDanmaku
 import com.duzhaokun123.danmakuview.interfaces.DanmakuParser
 import com.duzhaokun123.danmakuview.model.Danmakus
+import com.duzhaokun123.danmakuview.ui.DanmakuView
 import kotlin.random.Random
 
 object SpecialDanmakuTestParser : DanmakuParser {
-    override fun parse(): Danmakus {
+    override fun parse(): MutableMap<Int, Danmakus> {
         val danmakus = Danmakus()
         danmakus.add(SpecialDanmaku().apply {
             keyframes[0F] = Triple(PointF(0.5F, 0.5F), 0F, Value.ALPHA_MAX)
@@ -71,6 +72,6 @@ object SpecialDanmakuTestParser : DanmakuParser {
             keyframes[0F] = createRandomFrame()
             keyframes[1F] = createRandomFrame()
         })
-        return danmakus
+        return mutableMapOf(DanmakuView.POOL_UNDEFINED to danmakus)
     }
 }

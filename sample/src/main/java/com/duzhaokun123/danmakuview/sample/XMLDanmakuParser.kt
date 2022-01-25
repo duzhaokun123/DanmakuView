@@ -6,6 +6,7 @@ import android.util.Log
 import com.duzhaokun123.danmakuview.Value
 import com.duzhaokun123.danmakuview.danmaku.SimpleDanmakuFactory
 import com.duzhaokun123.danmakuview.danmaku.BiliSpecialDanmaku
+import com.duzhaokun123.danmakuview.getOrNew
 import com.duzhaokun123.danmakuview.interfaces.DanmakuParser
 import com.duzhaokun123.danmakuview.model.Danmakus
 import org.json.JSONArray
@@ -23,7 +24,7 @@ class XMLDanmakuParser(inputStream: InputStream) : DanmakuParser {
     private val simpleDanmakuFactory by lazy { SimpleDanmakuFactory() }
 
     private val danmakus by lazy {
-        val danmakus = Danmakus()
+        val danmakus = mutableMapOf<Int, Danmakus>()
 
         val xmlEventReader = XMLInputFactory.newInstance().createXMLEventReader(inputStream)
         var startD = false
@@ -58,9 +59,13 @@ class XMLDanmakuParser(inputStream: InputStream) : DanmakuParser {
                             danmaku.textColor = color
                             danmaku.textShadowColor =
                                 if (color <= Color.BLACK) Color.WHITE else Color.BLACK
-                            if (danmaku is BiliSpecialDanmaku) initialSpecialDanmakuData(danmaku)
+                            if (danmaku is BiliSpecialDanmaku) {
+                                initialSpecialDanmakuData(danmaku)
+                                danmakus.getOrNew(2).add(danmaku)
 //                        initialSpecailDanmakuData(danmaku, mContext, mDispScaleX, mDispScaleY)
-                            danmakus.add(danmaku)
+                            } else {
+                                danmakus.getOrNew(1).add(danmaku)
+                            }
                         }
                     }
                 }

@@ -6,5 +6,5 @@ fun interface DanmakuBlocker {
     /**
      * @return true: 屏蔽
      */
-    fun shouldBlock(danmaku: Danmaku): Boolean
+    fun shouldBlock(danmaku: Danmaku, pool: Int): Boolean
 }

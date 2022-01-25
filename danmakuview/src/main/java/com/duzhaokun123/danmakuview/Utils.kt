@@ -4,6 +4,7 @@ import android.graphics.*
 import com.duzhaokun123.danmakuview.danmaku.Danmaku
 import com.duzhaokun123.danmakuview.model.DanmakuConfig
 import com.duzhaokun123.danmakuview.danmaku.LineDanmaku
+import com.duzhaokun123.danmakuview.model.Danmakus
 import kotlin.math.abs
 import kotlin.math.sqrt
 
@@ -72,3 +73,20 @@ fun PointF.getDistance(p: PointF): Float {
 
 operator fun PointF.component1() = this.x
 operator fun PointF.component2() = this.y
+
+fun MutableMap<Int, Danmakus>.getOrNew(pool: Int) = this[pool] ?: Danmakus().also { this[pool] = it }
+
+fun Map<Int, Danmakus>.forEachDanmaku(action: (Danmaku) -> Unit) {
+    this.forEach { (_, danamkus) ->
+        danamkus.forEach(action)
+    }
+}
+
+val Map<Int, Danmakus>.danmakuCount: Int
+    get() {
+        var re = 0
+        this.forEach { (_, danmakus) ->
+            re += danmakus.size
+        }
+        return re
+    }

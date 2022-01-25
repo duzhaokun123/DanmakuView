@@ -16,6 +16,7 @@ import com.duzhaokun123.danmakuview.danmaku.TopDanmaku
 import com.duzhaokun123.danmakuview.interfaces.DanmakuParser
 import com.duzhaokun123.danmakuview.model.Danmakus
 import com.duzhaokun123.danmakuview.sample.databinding.ActivityMainBinding
+import com.duzhaokun123.danmakuview.ui.DanmakuView
 import kotlinx.coroutines.delay
 import java.io.InputStream
 
@@ -108,13 +109,13 @@ class MainActivity : AppCompatActivity() {
                             delay(1000)
                             Log.d("later10sp", "$it")
                         }
-                        Danmakus().apply {
+                        mutableMapOf(DanmakuView.POOL_UNDEFINED to Danmakus().apply {
                             add(TopDanmaku().apply {
                                 offset = 0
                                 duration = 2000
                                 text = "Danmaku"
                             })
-                        }
+                        })
                     }
                 }
                 true

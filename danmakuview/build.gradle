@@ -5,13 +5,13 @@ plugins {
 }
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 32
 
     defaultConfig {
         minSdkVersion 17
-        targetSdkVersion 31
+        targetSdkVersion 32
         versionCode 6
-        versionName "0.1.6"
+        versionName "0.2.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -47,7 +47,7 @@ afterEvaluate {
 
                 groupId = 'com.github.duzhaokun123'
                 artifactId = 'DanmakuView'
-                version = '0.1.6'
+                version = '0.2.0'
             }
         }
     }

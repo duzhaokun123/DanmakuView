@@ -10,6 +10,9 @@ import android.view.SurfaceHolder
 import android.view.SurfaceView
 import com.duzhaokun123.danmakuview.clean
 import com.duzhaokun123.danmakuview.danmaku.*
+import com.duzhaokun123.danmakuview.danmakuCount
+import com.duzhaokun123.danmakuview.forEachDanmaku
+import com.duzhaokun123.danmakuview.getOrNew
 import com.duzhaokun123.danmakuview.interfaces.DanmakuParser
 import com.duzhaokun123.danmakuview.model.DanmakuConfig
 import com.duzhaokun123.danmakuview.model.Danmakus
@@ -24,6 +27,8 @@ class DanmakuView @JvmOverloads constructor(
         const val TAG = "DanmakuView"
 
         val defaultDanmakuConfig = DanmakuConfig()
+
+        const val POOL_UNDEFINED = -1
     }
 
     init {
@@ -43,7 +48,7 @@ class DanmakuView @JvmOverloads constructor(
     private var drawOnceResume = false
     private var parseJob: Job? = null
 
-    var danmakus = Danmakus()
+    var danmakus = mutableMapOf(POOL_UNDEFINED to Danmakus())
 
     /**
      * 进行时间毫秒
@@ -66,7 +71,7 @@ class DanmakuView @JvmOverloads constructor(
         get() = visibility == VISIBLE
     var drawDebugInfo = false
     var danmakuConfig = defaultDanmakuConfig
-    var onDanmakuClickListener: ((danmaku: Danmaku) -> Unit)? = null
+    var onDanmakuClickListener: ((danmaku: ShowingDanmakuInfo) -> Unit)? = null
 
     /**
      * -1: 可以倒放
@@ -138,17 +143,17 @@ class DanmakuView @JvmOverloads constructor(
     }
 
     @JvmOverloads
-    fun parse(parser: DanmakuParser, onEnd: ((danmakus: Danmakus) -> Unit)? = null) {
+    fun parse(parser: DanmakuParser, onEnd: ((danmakus: Map<Int, Danmakus>) -> Unit)? = null) {
         parse({ parser.parse() }, onEnd)
     }
 
-    fun parse(parser: (suspend CoroutineScope.() -> Danmakus)) {
+    fun parse(parser: (suspend CoroutineScope.() -> MutableMap<Int, Danmakus>)) {
         parse(parser, null)
     }
 
     fun parse(
-        parser: (suspend CoroutineScope.() -> Danmakus),
-        onEnd: ((danmakus: Danmakus) -> Unit)?
+        parser: (suspend CoroutineScope.() -> MutableMap<Int, Danmakus>),
+        onEnd: ((danmakus: Map<Int, Danmakus>) -> Unit)?
     ) {
         parseJob?.cancel()
         var thisJob: Job? = null
@@ -173,7 +178,7 @@ class DanmakuView @JvmOverloads constructor(
 
     fun cleanCache() {
         GlobalScope.launch(Dispatchers.Default) {
-            danmakus.forEach { danmaku ->
+            danmakus.forEachDanmaku { danmaku ->
                 danmaku.cache = null
             }
         }
@@ -187,7 +192,7 @@ class DanmakuView @JvmOverloads constructor(
         GlobalScope.launch(Dispatchers.Default) {
             val startTime = System.currentTimeMillis()
             var count = 0
-            danmakus.forEach { danmaku ->
+            danmakus.forEachDanmaku { danmaku ->
                 if (danmaku.cacheable && (danmaku.cache == null || recache)) {
                     danmaku.onBuildCache(danmakuConfig)
                     if (danmaku.cache != null) count++
@@ -202,12 +207,21 @@ class DanmakuView @JvmOverloads constructor(
     }
 
 
-    fun addDanmaku(danmaku: Danmaku) = danmakus.add(danmaku)
-    fun addDanmakus(danmakus: Collection<Danmaku>) = this.danmakus.addAll(danmakus)
-    fun removeDanmaku(danmaku: Danmaku) = danmakus.remove(danmaku)
-    fun removeDanmakus() = danmakus.removeAll()
+    @JvmOverloads
+    fun addDanmaku(danmaku: Danmaku, pool: Int = POOL_UNDEFINED) = danmakus.getOrNew(pool).add(danmaku)
+    @JvmOverloads
+    fun addDanmakus(danmakus: Collection<Danmaku>, pool: Int = POOL_UNDEFINED) = this.danmakus.getOrNew(pool).addAll(danmakus)
+    @JvmOverloads
+    fun removeDanmaku(danmaku: Danmaku, pool: Int = POOL_UNDEFINED) = danmakus.getOrNew(pool).remove(danmaku)
+    @JvmOverloads
+    fun removeDanmakus(pool: Int = POOL_UNDEFINED) = danmakus.getOrNew(pool).removeAll()
+    fun addDanmakus(danmakus: Map<Int, Danmakus>) {
+        danmakus.forEach { (i, danmakus) ->
+            this.danmakus.getOrNew(i).addAll(danmakus)
+        }
+    }
 
-    private var clickedDanmaku: Danmaku? = null
+    private var clickedDanmaku: ShowingDanmakuInfo? = null
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -216,7 +230,7 @@ class DanmakuView @JvmOverloads constructor(
             MotionEvent.ACTION_DOWN -> {
                 showingDanmakus.forEach { sd ->
                     if (sd.rect.contains(event.x, event.y)) {
-                        clickedDanmaku = sd.danmaku
+                        clickedDanmaku = sd
                         return true
                     }
                 }
@@ -273,43 +287,47 @@ class DanmakuView @JvmOverloads constructor(
         canvas.clean()
         val oldShowingDanmakus = showingDanmakus
         val willShowingDanmakus = mutableListOf<ShowingDanmakuInfo>()
-        val willDrawDanmakus = mutableListOf<Pair<Danmaku, Float>>()
+        val willDrawDanmakus = mutableListOf<Triple<Danmaku, Float, Int>>()
         val conductedTime = conductedTimeMs
-        danmakus.forEach { danmaku ->
-            if (danmaku.visibility.not()) return@forEach
+        danmakus.forEach { (pool, danmakus) ->
+            runCatching {
+                danmakus.forEach danmakuAction@{ danmaku ->
+                    if (danmaku.visibility.not()) return@danmakuAction
 
-            val duration = (danmaku.duration * danmakuConfig.durationCoeff)
-            val start = danmaku.offset
-            val end = (danmaku.offset + duration).toLong()
-            if (conductedTime in start..end) {
-                for (blocker in danmakuConfig.blockers) {
-                    if (blocker.shouldBlock(danmaku)) return@forEach
+                    val duration = (danmaku.duration * danmakuConfig.durationCoeff)
+                    val start = danmaku.offset
+                    val end = (danmaku.offset + duration).toLong()
+                    if (conductedTime in start..end) {
+                        for (blocker in danmakuConfig.blockers) {
+                            if (blocker.shouldBlock(danmaku, pool)) return@danmakuAction
+                        }
+                        val progress = (conductedTime - start) / duration
+                        willDrawDanmakus.add(Triple(danmaku, progress, pool))
+                    }
                 }
-                val progress = (conductedTime - start) / duration
-                willDrawDanmakus.add(danmaku to progress)
             }
         }
-        willDrawDanmakus.removeAll { (danmaku, progress) ->
+        willDrawDanmakus.removeAll { (danmaku, progress, pool) ->
             val re: Boolean
-            val olsShowingDanmaku = findOldShowingDanmaku(oldShowingDanmakus, danmaku)
+            val olsShowingDanmaku = findOldShowingDanmaku(oldShowingDanmakus, danmaku, pool)
             re = if (olsShowingDanmaku != null) {
                 drawDanmaku(
                     canvas, maxLine,
-                    danmaku, progress, olsShowingDanmaku.line,
+                    danmaku, progress, olsShowingDanmaku.line, pool,
                     willShowingDanmakus
                 )
                 true
             } else false
             re
         }
-        willDrawDanmakus.forEach { (danmaku, progress) ->
+        willDrawDanmakus.forEach { (danmaku, progress, pool) ->
             if (danmaku is LineDanmaku) {
                 var line = 1
                 var moved: Boolean
                 do {
                     moved = false
                     for (willShowingDanmaku in willShowingDanmakus) {
-                        if (line == willShowingDanmaku.line && danmaku.javaClass == willShowingDanmaku.danmaku.javaClass) {
+                        if (line == willShowingDanmaku.line && danmaku.javaClass == willShowingDanmaku.danmaku.javaClass && willShowingDanmaku.pool == pool) {
                             if (danmaku.willHit(
                                     willShowingDanmaku.danmaku,
                                     drawWidth,
@@ -324,9 +342,9 @@ class DanmakuView @JvmOverloads constructor(
                         }
                     }
                 } while (moved)
-                drawDanmaku(canvas, maxLine, danmaku, progress, line, willShowingDanmakus)
+                drawDanmaku(canvas, maxLine, danmaku, progress, line, pool, willShowingDanmakus)
             } else {
-                drawDanmaku(canvas, 0, danmaku, progress, 0, willShowingDanmakus)
+                drawDanmaku(canvas, 0, danmaku, progress, 0, pool, willShowingDanmakus)
             }
         }
         showingDanmakus = willShowingDanmakus
@@ -339,11 +357,11 @@ class DanmakuView @JvmOverloads constructor(
     }
 
     private fun findOldShowingDanmaku(
-        oldShowingDanmakus: List<ShowingDanmakuInfo>, danmaku: Danmaku
+        oldShowingDanmakus: List<ShowingDanmakuInfo>, danmaku: Danmaku, pool: Int
     ): ShowingDanmakuInfo? {
         var re: ShowingDanmakuInfo? = null
         oldShowingDanmakus.forEach { info ->
-            if (danmaku === info.danmaku)
+            if (danmaku === info.danmaku && pool == info.pool)
                 re = info
         }
         return re
@@ -351,18 +369,18 @@ class DanmakuView @JvmOverloads constructor(
 
     private fun drawDanmaku(
         canvas: Canvas, maxLine: Int,
-        danmaku: Danmaku, progress: Float, line: Int,
+        danmaku: Danmaku, progress: Float, line: Int, pool: Int,
         willShowingDanmakus: MutableList<ShowingDanmakuInfo>
     ) {
         if (line == 0) {
             danmaku.onDraw(canvas, drawWidth, drawHeight, progress, danmakuConfig, 0)?.let {
-                willShowingDanmakus.add(ShowingDanmakuInfo(danmaku, it, 0, progress))
+                willShowingDanmakus.add(ShowingDanmakuInfo(danmaku, it, 0, progress, pool))
             }
         } else if (line < maxLine || danmakuConfig.allowCovering) {
             var drawLine = line % maxLine
             if (drawLine == 0) drawLine = maxLine
             danmaku.onDraw(canvas, drawWidth, drawHeight, progress, danmakuConfig, drawLine)?.let {
-                willShowingDanmakus.add(ShowingDanmakuInfo(danmaku, it, line, progress))
+                willShowingDanmakus.add(ShowingDanmakuInfo(danmaku, it, line, progress, pool))
             }
         }
     }
@@ -371,6 +389,7 @@ class DanmakuView @JvmOverloads constructor(
         Paint().apply {
             color = Color.WHITE
             textSize = 40F
+            typeface = Typeface.MONOSPACE
         }
     }
 
@@ -380,7 +399,7 @@ class DanmakuView @JvmOverloads constructor(
             20F, drawHeight - 100F, debugPaint
         )
         canvas.drawText(
-            "showingCount = ${showingDanmakus.size}, count = ${danmakus.size}",
+            "showingCount = ${showingDanmakus.size}, pools = ${danmakus.size}, count = ${danmakus.danmakuCount}",
             20F, drawHeight - 50F, debugPaint
         )
     }
