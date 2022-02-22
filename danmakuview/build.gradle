@@ -10,8 +10,6 @@ android {
     defaultConfig {
         minSdkVersion 17
         targetSdkVersion 32
-        versionCode 6
-        versionName "0.2.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -36,7 +34,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     //kotlinx-coroutines
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"
 }
 
 afterEvaluate {
