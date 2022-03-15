@@ -11,6 +11,7 @@
     <com.google.android.flexbox.FlexboxLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="80dp"
@@ -95,6 +96,20 @@
             android:layout_height="wrap_content"
             android:text="typeface" />
 
+        <Button
+            android:id="@+id/btn_style"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="style" />
+
+        <Button
+            android:id="@+id/btn_background"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="background" />
+
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/sc_allowCovering"
             android:layout_width="wrap_content"
@@ -127,7 +142,8 @@
                 android:layout_height="wrap_content"
                 android:max="400"
                 android:progress="300"
-                android:progressBackgroundTint="@color/white" />
+                android:progressBackgroundTint="?attr/colorOnPrimary"
+                tools:targetApi="lollipop" />
         </LinearLayout>
 
         <LinearLayout
@@ -151,7 +167,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:text="1.0"
-                android:textColor="@color/white"
+                android:textColor="?attr/colorPrimaryVariant"
                 android:textSize="12sp" />
 
             <SeekBar
@@ -160,7 +176,8 @@
                 android:layout_height="wrap_content"
                 android:max="200"
                 android:progress="100"
-                android:progressBackgroundTint="@color/white" />
+                android:progressBackgroundTint="?attr/colorOnPrimary"
+                tools:targetApi="lollipop" />
         </LinearLayout>
 
         <LinearLayout
@@ -184,7 +201,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:text="1.0"
-                android:textColor="@color/white"
+                android:textColor="?attr/colorPrimaryVariant"
                 android:textSize="12sp" />
 
             <SeekBar
@@ -193,7 +210,8 @@
                 android:layout_height="wrap_content"
                 android:max="200"
                 android:progress="100"
-                android:progressBackgroundTint="@color/white" />
+                android:progressBackgroundTint="?attr/colorOnPrimary"
+                tools:targetApi="lollipop" />
         </LinearLayout>
 
         <LinearLayout
@@ -217,7 +235,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:text="40"
-                android:textColor="@color/white"
+                android:textColor="?attr/colorPrimaryVariant"
                 android:textSize="12sp" />
 
             <SeekBar
@@ -226,7 +244,8 @@
                 android:layout_height="wrap_content"
                 android:max="40"
                 android:progress="20"
-                android:progressBackgroundTint="@color/white" />
+                android:progressBackgroundTint="?attr/colorOnPrimary"
+                tools:targetApi="lollipop" />
         </LinearLayout>
 
         <LinearLayout
@@ -250,7 +269,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:text="0"
-                android:textColor="@color/white"
+                android:textColor="?attr/colorPrimaryVariant"
                 android:textSize="12sp" />
 
             <SeekBar
@@ -259,7 +278,8 @@
                 android:layout_height="wrap_content"
                 android:max="50"
                 android:progress="0"
-                android:progressBackgroundTint="@color/white" />
+                android:progressBackgroundTint="?attr/colorOnPrimary"
+                tools:targetApi="lollipop" />
         </LinearLayout>
 
         <LinearLayout
@@ -283,7 +303,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:text="0"
-                android:textColor="@color/white"
+                android:textColor="?attr/colorPrimaryVariant"
                 android:textSize="12sp" />
 
             <SeekBar
@@ -292,7 +312,8 @@
                 android:layout_height="wrap_content"
                 android:max="50"
                 android:progress="0"
-                android:progressBackgroundTint="@color/white" />
+                android:progressBackgroundTint="?attr/colorOnPrimary"
+                tools:targetApi="lollipop" />
         </LinearLayout>
     </com.google.android.flexbox.FlexboxLayout>
 

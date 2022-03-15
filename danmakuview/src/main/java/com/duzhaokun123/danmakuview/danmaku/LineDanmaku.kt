@@ -1,6 +1,8 @@
 package com.duzhaokun123.danmakuview.danmaku
 
 import android.graphics.*
+import com.duzhaokun123.danmakuview.Value
+import com.duzhaokun123.danmakuview.isDark
 import com.duzhaokun123.danmakuview.model.DanmakuConfig
 
 abstract class LineDanmaku : Danmaku() {
@@ -14,16 +16,31 @@ abstract class LineDanmaku : Danmaku() {
             typeface = danmakuConfig.typeface
             isUnderlineText = underline
             when (danmakuConfig.drawMode) {
-                DanmakuConfig.DrawMode.DEFAULT -> Unit
-                DanmakuConfig.DrawMode.SHADOW -> {
+                DanmakuConfig.DrawMode.SHADOW,
+                DanmakuConfig.DrawMode.SHADOW_STROKE -> {
                     setShadowLayer(
                         danmakuConfig.shadowRadius,
                         danmakuConfig.shadowDx,
                         danmakuConfig.shadowDy,
-                        danmakuConfig.shadowColor
+                        textShadowColor ?: danmakuConfig.shadowColor
                     )
                 }
+                else -> Unit
             }
+        }
+        val stokePaint = when(danmakuConfig.drawMode) {
+            DanmakuConfig.DrawMode.STROKE,
+            DanmakuConfig.DrawMode.SHADOW_STROKE ->
+                Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                    color = textStrokeColor ?: if (textColor.isDark) Color.WHITE else Color.BLACK
+                    alpha = Value.ALPHA_MAX
+                    textSize = this@LineDanmaku.textSize * danmakuConfig.textSizeCoeff
+                    typeface = danmakuConfig.typeface
+                    isUnderlineText = underline
+                    style = Paint.Style.STROKE
+                    strokeWidth = danmakuConfig.stokeWidth
+                }
+            else -> null
         }
         val bounders = Rect()
         paint.getTextBounds(text, 0, text.length, bounders)
@@ -33,6 +50,9 @@ abstract class LineDanmaku : Danmaku() {
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         canvas.drawText(text, 0F, bounders.height().toFloat(), paint)
+        if (stokePaint != null) {
+            canvas.drawText(text, 0F, bounders.height().toFloat(), stokePaint)
+        }
         if (borderColor != 0) {
             paint = Paint()
             paint.color = borderColor

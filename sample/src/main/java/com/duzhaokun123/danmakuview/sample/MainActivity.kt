@@ -1,31 +1,42 @@
 package com.duzhaokun123.danmakuview.sample
 
-import android.app.Activity
-import android.content.Intent
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Typeface
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import android.widget.EditText
 import android.widget.PopupMenu
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.MenuRes
 import androidx.appcompat.app.AppCompatActivity
 import com.duzhaokun123.danmakuview.danmaku.R2LDanmaku
 import com.duzhaokun123.danmakuview.danmaku.TopDanmaku
 import com.duzhaokun123.danmakuview.interfaces.DanmakuParser
+import com.duzhaokun123.danmakuview.model.DanmakuConfig
 import com.duzhaokun123.danmakuview.model.Danmakus
 import com.duzhaokun123.danmakuview.sample.databinding.ActivityMainBinding
 import com.duzhaokun123.danmakuview.ui.DanmakuView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.delay
 import java.io.InputStream
 
 class MainActivity : AppCompatActivity() {
-    companion object {
-        const val REQUEST_OPEN_XML_DANMAKU = 1
-    }
-
     private lateinit var baseBinding: ActivityMainBinding
+    private val openXmlFile = registerForActivityResult(ActivityResultContracts.OpenDocument()) {
+        it ?: return@registerForActivityResult
+        parserXMLDanmaku(contentResolver.openInputStream(it)!!)
+    }
+    private val openBackgroundImage = registerForActivityResult(ActivityResultContracts.OpenDocument()) {
+        it ?: return@registerForActivityResult
+        val img = BitmapFactory.decodeStream(contentResolver.openInputStream(it))
+        baseBinding.root.background = BitmapDrawable(resources, img)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,7 +94,7 @@ class MainActivity : AppCompatActivity() {
         }
         baseBinding.btnTypeface.setOnClickListener {
             showPopupMenu(R.menu.typeface, it) { item ->
-                when (item.itemId) {
+                when(item.itemId) {
                     R.id.a -> baseBinding.dv.danmakuConfig.typeface = Typeface.DEFAULT
                     R.id.b -> baseBinding.dv.danmakuConfig.typeface = Typeface.DEFAULT_BOLD
                     R.id.c -> baseBinding.dv.danmakuConfig.typeface = Typeface.SANS_SERIF
@@ -93,15 +104,22 @@ class MainActivity : AppCompatActivity() {
                 true
             }
         }
+        baseBinding.btnStyle.setOnClickListener {
+            showPopupMenu(R.menu.style, it) { item ->
+                when(item.itemId) {
+                    R.id.defaule -> baseBinding.dv.danmakuConfig.drawMode = DanmakuConfig.DrawMode.DEFAULT
+                    R.id.shadow -> baseBinding.dv.danmakuConfig.drawMode = DanmakuConfig.DrawMode.SHADOW
+                    R.id.stroke -> baseBinding.dv.danmakuConfig.drawMode = DanmakuConfig.DrawMode.STROKE
+                    R.id.stroke_shadow -> baseBinding.dv.danmakuConfig.drawMode = DanmakuConfig.DrawMode.SHADOW_STROKE
+                }
+                true
+            }
+        }
         baseBinding.btnParser.setOnClickListener {
             showPopupMenu(R.menu.parser, it) { item ->
                 when (item.itemId) {
                     R.id.inb -> parserXMLDanmaku(resources.openRawResource(R.raw.danmaku))
-                    R.id.file ->
-                        startActivityForResult(Intent(Intent.ACTION_GET_CONTENT).apply {
-                            addCategory(Intent.CATEGORY_OPENABLE)
-                            type = "text/xml"
-                        }, REQUEST_OPEN_XML_DANMAKU)
+                    R.id.file -> openXmlFile.launch(arrayOf("text/xml"))
                     R.id.special -> baseBinding.dv.parse(SpecialDanmakuTestParser)
                     R.id.empty -> baseBinding.dv.parse(DanmakuParser.EMPTY)
                     R.id.later_10s -> baseBinding.dv.parse {
@@ -117,6 +135,38 @@ class MainActivity : AppCompatActivity() {
                             })
                         })
                     }
+                }
+                true
+            }
+        }
+        baseBinding.btnBackground.setOnClickListener {
+            showPopupMenu(R.menu.background, it) { item ->
+                when(item.itemId) {
+                    R.id.color -> {
+                        MaterialAlertDialogBuilder(this)
+                            .setTitle("设置背景颜色")
+                            .setView(EditText(this).apply {
+                                addTextChangedListener(object : TextWatcher {
+                                    override fun afterTextChanged(s: Editable?) {
+                                        runCatching {
+                                            baseBinding.root.setBackgroundColor(Color.parseColor(s.toString()))
+                                        }
+                                    }
+
+                                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                                    }
+
+                                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                                    }
+                                })
+                            })
+                            .setPositiveButton("确定") { _, _ -> }
+                            .show()
+                    }
+                    R.id.file -> {
+                        openBackgroundImage.launch(arrayOf("image/*"))
+                    }
+                    R.id.transparent -> baseBinding.root.setBackgroundColor(Color.TRANSPARENT)
                 }
                 true
             }
@@ -140,13 +190,6 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         baseBinding.dv.destroy()
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode == Activity.RESULT_OK)
-            parserXMLDanmaku(contentResolver.openInputStream(data!!.data!!)!!)
-
-        super.onActivityResult(requestCode, resultCode, data)
     }
 
     private fun fullScreen() {

@@ -4,6 +4,7 @@ import android.graphics.*
 import com.duzhaokun123.danmakuview.Value
 import com.duzhaokun123.danmakuview.component1
 import com.duzhaokun123.danmakuview.component2
+import com.duzhaokun123.danmakuview.isDark
 import com.duzhaokun123.danmakuview.model.DanmakuConfig
 
 class SpecialDanmaku : Danmaku() {
@@ -35,16 +36,31 @@ class SpecialDanmaku : Danmaku() {
             typeface = this@SpecialDanmaku.typeface
             isUnderlineText = underline
             when (drawMode) {
-                DanmakuConfig.DrawMode.DEFAULT -> Unit
-                DanmakuConfig.DrawMode.SHADOW -> {
+                DanmakuConfig.DrawMode.SHADOW,
+                DanmakuConfig.DrawMode.SHADOW_STROKE -> {
                     setShadowLayer(
                         danmakuConfig.shadowRadius,
                         danmakuConfig.shadowDx,
                         danmakuConfig.shadowDy,
-                        danmakuConfig.shadowColor
+                        textShadowColor ?: danmakuConfig.shadowColor
                     )
                 }
+                else -> Unit
             }
+        }
+        val stokePaint = when(drawMode){
+            DanmakuConfig.DrawMode.STROKE,
+                DanmakuConfig.DrawMode.SHADOW_STROKE ->
+                Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                color = textStrokeColor ?: if (textColor.isDark) Color.WHITE else Color.BLACK
+                alpha = Value.ALPHA_MAX
+                textSize = this@SpecialDanmaku.textSize
+                typeface = this@SpecialDanmaku.typeface
+                isUnderlineText = underline
+                style = Paint.Style.STROKE
+                strokeWidth = danmakuConfig.stokeWidth
+            }
+            else -> null
         }
         val bounderses = mutableListOf<Rect>()
         var width = 0
@@ -65,6 +81,9 @@ class SpecialDanmaku : Danmaku() {
         text.forEachIndexed { i, s ->
             nextY += bounderses[i].height().toFloat()
             canvas.drawText(s, 0F, nextY, paint)
+            if (stokePaint != null) {
+                canvas.drawText(s, 0F, nextY, stokePaint)
+            }
         }
         if (borderColor != 0) {
             paint = Paint()

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/defaule"
+        android:title="default" />
+    <item
+        android:id="@+id/shadow"
+        android:title="shadow" />
+    <item
+        android:id="@+id/stroke"
+        android:title="stroke" />
+    <item
+        android:id="@+id/stroke_shadow"
+        android:title="stroke_shadow" />
+</menu>

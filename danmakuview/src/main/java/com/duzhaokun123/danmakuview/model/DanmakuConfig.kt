@@ -6,7 +6,7 @@ import com.duzhaokun123.danmakuview.interfaces.DanmakuBlocker
 
 class DanmakuConfig {
     enum class DrawMode {
-        DEFAULT, SHADOW
+        DEFAULT, SHADOW, STROKE, SHADOW_STROKE
     }
 
     /**
@@ -60,9 +60,14 @@ class DanmakuConfig {
     var shadowDy = 0F
 
     /**
-     * 阴影颜色
+     * 后备阴影颜色
      */
     var shadowColor = Color.DKGRAY
+
+    /**
+     * 描边宽度
+     */
+    var stokeWidth = 1F
 
     /**
      * 允许覆盖

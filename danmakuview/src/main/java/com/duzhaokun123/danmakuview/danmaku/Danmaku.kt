@@ -22,9 +22,14 @@ abstract class Danmaku {
     var textColor = Color.WHITE
 
     /**
-     * 阴影/描边颜色
+     * 阴影颜色
      */
-    var textShadowColor = 0
+    var textShadowColor: Int? = null
+
+    /**
+     * 描边颜色
+     */
+    var textStrokeColor: Int? = null
 
     /**
      * 下划线
