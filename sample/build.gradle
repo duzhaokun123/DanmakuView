@@ -4,12 +4,12 @@ plugins {
 }
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 36
 
     defaultConfig {
         applicationId "com.duzhaokun123.danmakuview.sample"
-        minSdkVersion 17
-        targetSdkVersion 32
+        minSdkVersion 21
+        targetSdkVersion 36
         versionCode 1
         versionName "1.0"
 
@@ -32,17 +32,18 @@ android {
     buildFeatures {
         viewBinding true
     }
+    namespace 'com.duzhaokun123.danmakuview.sample'
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.4.1'
-    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'com.google.android.material:material:1.12.0'
 
     //DanmakuView
     implementation project(":danmakuview")
 
     //flexbox-layout
-    implementation 'com.google.android:flexbox:2.0.1'
+    implementation 'com.google.android.flexbox:flexbox:3.0.0'
 
     implementation 'org.codehaus.woodstox:woodstox-core-asl:4.4.1'
 }
