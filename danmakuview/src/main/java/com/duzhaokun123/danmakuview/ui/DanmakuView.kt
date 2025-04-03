@@ -18,6 +18,9 @@ import com.duzhaokun123.danmakuview.model.DanmakuConfig
 import com.duzhaokun123.danmakuview.model.Danmakus
 import com.duzhaokun123.danmakuview.model.ShowingDanmakuInfo
 import kotlinx.coroutines.*
+import java.util.Timer
+import java.util.TimerTask
+import kotlin.concurrent.schedule
 
 class DanmakuView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -37,16 +40,18 @@ class DanmakuView @JvmOverloads constructor(
         } else {
             holder.addCallback(this)
             holder.setFormat(PixelFormat.TRANSLUCENT)
+            launchDrawThread()
+            launcherTimerTask()
         }
     }
 
     private var drawWidth = 0
     private var drawHeight = 0
-    private var drawJob: Job? = null
+    private var drawThread: Thread? = null
     private var drawRunning = false
     private var drawPaused = true
-    private var drawOnceResume = false
     private var parseJob: Job? = null
+    private var timerTask: TimerTask? = null
 
     var danmakus = mutableMapOf(POOL_UNDEFINED to Danmakus())
 
@@ -54,16 +59,16 @@ class DanmakuView @JvmOverloads constructor(
      * 进行时间毫秒
      */
     val conductedTimeMs
-        get() = conductedTimeNs / 1_000_000
+        get() = conductedTimeUs / 1_000L
 
     /**
-     * 进行时间纳秒 (不准确)
+     * 进行时间微秒
      */
-    var conductedTimeNs = 0L
+    var conductedTimeUs = 0L
         private set
     var showingDanmakus = listOf<ShowingDanmakuInfo>()
         private set
-    var isDestroied = false
+    var isDestroyed = false
         private set
     val isPaused
         get() = drawPaused
@@ -97,13 +102,12 @@ class DanmakuView @JvmOverloads constructor(
 
     override fun surfaceCreated(holder: SurfaceHolder) {
         drawRunning = true
-        launchDrawJob()
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
         drawWidth = width
         drawHeight = height
-        drawOnceResume = true
+        drawOneTime()
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder) {
@@ -115,37 +119,26 @@ class DanmakuView @JvmOverloads constructor(
     }
 
     fun resume() {
-        if (drawPaused) {
-            drawPaused = false
-            //计时不是很准
-            Thread {
-                while (true) {
-                    if (isDestroied || drawPaused) break
-                    val startTime = System.nanoTime()
-                    Thread.sleep(16)
-                    conductedTimeNs += ((System.nanoTime() - startTime) * speed).toLong()
-                }
-            }.apply {
-                priority = Thread.MAX_PRIORITY
-            }.start()
-        }
+        drawPaused = false
     }
 
     fun seekTo(timeMs: Long) {
-        conductedTimeNs = timeMs * 1_000_000
-        drawOnceResume = true
+        conductedTimeUs = timeMs * 1_000
+        drawOneTime()
     }
 
     @JvmOverloads
     fun start(offsetMs: Long = 0) {
-        conductedTimeNs = offsetMs * 1_000_000
+        conductedTimeUs = offsetMs * 1_000
         resume()
     }
 
     fun destroy() {
-        isDestroied = true
+        isDestroyed = true
         holder.removeCallback(this)
         parseJob?.cancel()
+        timerTask?.cancel()
+        drawOneTime()
     }
 
     @JvmOverloads
@@ -168,9 +161,9 @@ class DanmakuView @JvmOverloads constructor(
             if (isActive) {
                 danmakus = a
                 drawPaused = true
-                conductedTimeNs = 0
-                drawOnceResume = true
+                conductedTimeUs = 0
                 onEnd?.invoke(danmakus)
+                drawOneTime()
             }
             if (parseJob === thisJob)
                 parseJob = null
@@ -178,8 +171,11 @@ class DanmakuView @JvmOverloads constructor(
         parseJob = thisJob
     }
 
-    fun drawOnce() {
-        drawOnceResume = true
+    fun drawOneTime() {
+        drawThread ?: return
+        synchronized(drawThread!!) {
+            (drawThread as Object).notify()
+        }
     }
 
     fun cleanCache() {
@@ -249,29 +245,27 @@ class DanmakuView @JvmOverloads constructor(
         return super.onTouchEvent(event)
     }
 
-    private fun launchDrawJob() {
-        if (drawJob != null) return
-        drawJob = GlobalScope.launch(Dispatchers.Default) {
+    private fun launchDrawThread() {
+        drawThread = Thread {
             while (true) {
-                if (drawRunning.not()) break
-
-                val startTime = System.currentTimeMillis()
-
-                drawDanamkus()
-
-                val endTime = System.currentTimeMillis()
-                val deltaTime = endTime - startTime
-
-                if (deltaTime < 16) {
-                    delay(deltaTime)
+                synchronized(drawThread!!) {
+                    (drawThread as Object).wait()
                 }
-
-                while (drawPaused && drawRunning && drawOnceResume.not()) {
-                    delay(1)
+                if (isDestroyed) break
+                if (drawRunning) {
+                    drawDanamkus()
                 }
-                if (drawOnceResume) drawOnceResume = false
             }
-            drawJob = null
+            drawThread = null
+        }
+        drawThread!!.start()
+    }
+
+    private fun launcherTimerTask(period: Long = 16) {
+        timerTask = Timer().schedule(0, period) {
+            if (drawPaused) return@schedule
+            conductedTimeUs += (period * speed * 1_000).toLong()
+            drawOneTime()
         }
     }
 
@@ -398,7 +392,7 @@ class DanmakuView @JvmOverloads constructor(
             20F, drawHeight - 150F, debugPaint
         )
         canvas.drawText(
-            "conductedTimeNs = $conductedTimeNs, speed = $speed, size = ${drawWidth}x$drawHeight",
+            "conductedTimeUs = $conductedTimeUs, speed = $speed, size = ${drawWidth}x$drawHeight",
             20F, drawHeight - 100F, debugPaint
         )
         canvas.drawText(

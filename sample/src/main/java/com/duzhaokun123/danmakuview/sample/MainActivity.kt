@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         baseBinding.btnStart.setOnClickListener { baseBinding.dv.start() }
         baseBinding.btnBuildCache.setOnClickListener { baseBinding.dv.buildCache() }
         baseBinding.btnCleanCache.setOnClickListener { baseBinding.dv.cleanCache() }
-        baseBinding.btnDrawOnce.setOnClickListener { baseBinding.dv.drawOnce() }
+        baseBinding.btnDrawOneTime.setOnClickListener { baseBinding.dv.drawOneTime() }
         baseBinding.sbSpeed.setOnSeekBarChangeListener(SimpleValueOnSeekBarChangeListener { value ->
             val speed = (value - 200) / 100F
             baseBinding.dv.speed = speed

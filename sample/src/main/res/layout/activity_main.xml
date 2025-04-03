@@ -88,11 +88,11 @@
             android:text="clean cache" />
 
         <Button
-            android:id="@+id/btn_drawOnce"
+            android:id="@+id/btn_drawOneTime"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="draw once" />
+            android:text="draw one-time" />
 
         <Button
             android:id="@+id/btn_typeface"
