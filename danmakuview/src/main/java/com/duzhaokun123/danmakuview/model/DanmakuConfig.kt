@@ -72,10 +72,29 @@ class DanmakuConfig {
     /**
      * 允许覆盖
      */
-    var allowCovering = false
+    var allowOverlap = false
 
     /**
      * 屏蔽器
      */
     var blockers = mutableSetOf<DanmakuBlocker>()
+
+    /**
+     * 最大行数
+     *
+     * 与 [maxRelativeHeight] 一同设置时取最小值
+     */
+    var maxLine = Int.MAX_VALUE
+
+    /**
+     * 最大相对高度 (0, 1]
+     *
+     * 与 [maxLine] 一同设置时取最小值
+     */
+    var maxRelativeHeight = 1F
+
+    /**
+     * 也许你需要一些自己但弹幕类的特别设置
+     */
+    val custom = mutableMapOf<String, String>()
 }

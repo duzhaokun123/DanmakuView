@@ -21,6 +21,7 @@ import kotlinx.coroutines.*
 import java.util.Timer
 import java.util.TimerTask
 import kotlin.concurrent.schedule
+import kotlin.math.min
 
 class DanmakuView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -281,9 +282,10 @@ class DanmakuView @JvmOverloads constructor(
 
     private fun drawDanamkus() {
         val start = System.nanoTime()
-        val maxLine =
-            (drawHeight - danmakuConfig.marginTop - danmakuConfig.marginBottom) / danmakuConfig.lineHeight
+        var maxLine =
+            (((drawHeight - danmakuConfig.marginTop - danmakuConfig.marginBottom) * danmakuConfig.maxRelativeHeight)/ danmakuConfig.lineHeight).toInt()
         if (maxLine < 1) return
+        maxLine = min(maxLine, danmakuConfig.maxLine)
 
         val canvas = try {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
@@ -329,7 +331,7 @@ class DanmakuView @JvmOverloads constructor(
                 )
                 true
             } else false
-            re
+            return@removeAll re
         }
         willDrawDanmakus.forEach { (danmaku, progress, pool) ->
             if (danmaku is LineDanmaku) {
@@ -387,7 +389,7 @@ class DanmakuView @JvmOverloads constructor(
             danmaku.onDraw(canvas, drawWidth, drawHeight, progress, danmakuConfig, 0)?.let {
                 willShowingDanmakus.add(ShowingDanmakuInfo(danmaku, it, 0, progress, pool))
             }
-        } else if (line < maxLine || danmakuConfig.allowCovering) {
+        } else if (line < maxLine || danmakuConfig.allowOverlap) {
             var drawLine = line % maxLine
             if (drawLine == 0) drawLine = maxLine
             danmaku.onDraw(canvas, drawWidth, drawHeight, progress, danmakuConfig, drawLine)?.let {

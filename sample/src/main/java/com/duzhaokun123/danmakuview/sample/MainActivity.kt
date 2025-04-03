@@ -95,8 +95,8 @@ class MainActivity : AppCompatActivity() {
             baseBinding.dv.danmakuConfig.marginBottom = value
             baseBinding.tvMarginBottom.text = value.toString()
         })
-        baseBinding.scAllowCovering.setOnCheckedChangeListener { _, isChecked ->
-            baseBinding.dv.danmakuConfig.allowCovering = isChecked
+        baseBinding.scAllowOverlap.setOnCheckedChangeListener { _, isChecked ->
+            baseBinding.dv.danmakuConfig.allowOverlap = isChecked
         }
         baseBinding.btnTypeface.setOnClickListener {
             showPopupMenu(R.menu.typeface, it) { item ->
@@ -191,6 +191,10 @@ class MainActivity : AppCompatActivity() {
                 true
             }
         }
+        baseBinding.sbMaxRelativeHeight.setOnSeekBarChangeListener(SimpleValueOnSeekBarChangeListener({ value ->
+            baseBinding.dv.danmakuConfig.maxRelativeHeight = value / 100F
+            baseBinding.tvMaxRelativeHeight.text = baseBinding.dv.danmakuConfig.maxRelativeHeight.toString()
+        }))
 
         supportActionBar?.hide()
 
