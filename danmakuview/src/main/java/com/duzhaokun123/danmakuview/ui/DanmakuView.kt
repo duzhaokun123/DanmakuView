@@ -94,6 +94,15 @@ class DanmakuView @JvmOverloads constructor(
             setZOrderOnTop(value)
         }
 
+    /**
+     * 弹幕绘制周期 1000ms / fps 得到
+     */
+    var period: Long = 16
+        set(value) {
+            field = value
+            launcherTimerTask(value)
+        }
+
     var debugPaint = Paint().apply {
         color = Color.WHITE
         textSize = 40F
@@ -262,6 +271,7 @@ class DanmakuView @JvmOverloads constructor(
     }
 
     private fun launcherTimerTask(period: Long = 16) {
+        timerTask?.cancel()
         timerTask = Timer().schedule(0, period) {
             if (drawPaused) return@schedule
             conductedTimeUs += (period * speed * 1_000).toLong()

@@ -11,6 +11,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import android.widget.PopupMenu
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.MenuRes
 import androidx.appcompat.app.AppCompatActivity
@@ -41,6 +42,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         baseBinding = ActivityMainBinding.inflate(layoutInflater).apply {
             setContentView(root)
@@ -198,6 +200,9 @@ class MainActivity : AppCompatActivity() {
             Log.d("MainActivity", "$danmaku")
         }
         parserXMLDanmaku(resources.openRawResource(R.raw.danmaku))
+
+        // 1000ms / 120fps = 8.33ms
+        baseBinding.dv.period = 8
     }
 
     override fun onStart() {
