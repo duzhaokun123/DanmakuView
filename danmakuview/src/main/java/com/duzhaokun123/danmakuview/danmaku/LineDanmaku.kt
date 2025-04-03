@@ -12,7 +12,7 @@ abstract class LineDanmaku : Danmaku() {
         var paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = this@LineDanmaku.textColor
             alpha = this@LineDanmaku.alpha
-            textSize = this@LineDanmaku.textSize * danmakuConfig.textSizeCoeff
+            textSize = this@LineDanmaku.textSize * danmakuConfig.textSizeScale
             typeface = danmakuConfig.typeface
             isUnderlineText = underline
             when (danmakuConfig.drawMode) {
@@ -34,7 +34,7 @@ abstract class LineDanmaku : Danmaku() {
                 Paint(Paint.ANTI_ALIAS_FLAG).apply {
                     color = textStrokeColor ?: if (textColor.isDark) Color.WHITE else Color.BLACK
                     alpha = Value.ALPHA_MAX
-                    textSize = this@LineDanmaku.textSize * danmakuConfig.textSizeCoeff
+                    textSize = this@LineDanmaku.textSize * danmakuConfig.textSizeScale
                     typeface = danmakuConfig.typeface
                     isUnderlineText = underline
                     style = Paint.Style.STROKE

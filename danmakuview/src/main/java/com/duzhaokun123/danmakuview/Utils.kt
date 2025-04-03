@@ -22,9 +22,9 @@ fun LineDanmaku.checkStaticLineDanmakuHit(
     other: Danmaku, danmakuConfig: DanmakuConfig
 ): Boolean {
     val thisDanmakuStart = offset
-    val thisDanmakuEnd = offset + (duration * danmakuConfig.durationCoeff).toLong()
+    val thisDanmakuEnd = offset + (duration * danmakuConfig.durationScale).toLong()
     val otherDanmakuStart = other.offset
-    val otherDanmakuEnd = other.offset + (other.duration * danmakuConfig.durationCoeff).toLong()
+    val otherDanmakuEnd = other.offset + (other.duration * danmakuConfig.durationScale).toLong()
     return thisDanmakuStart in otherDanmakuStart..otherDanmakuEnd || otherDanmakuStart in thisDanmakuStart..thisDanmakuEnd
 }
 
@@ -37,14 +37,14 @@ fun LineDanmaku.checkScrollLineDanmakuHit(
     if (this.cache == null) this.onBuildCache(danmakuConfig)
     val otherCache = other.cache ?: return false
     val otherSpeed =
-        (drawWidth + otherCache.width).toDouble() / (other.duration * danmakuConfig.durationCoeff)
+        (drawWidth + otherCache.width).toDouble() / (other.duration * danmakuConfig.durationScale)
     val otherFullShowTime = other.offset + (otherCache.width / otherSpeed).toLong()
     if (this.offset in other.offset..otherFullShowTime) return true
 
     if (other.cache == null) other.onBuildCache(danmakuConfig)
     val thisCache = cache ?: return false
     val thisSpeed =
-        (drawWidth + thisCache.width).toDouble() / (this.duration * danmakuConfig.durationCoeff)
+        (drawWidth + thisCache.width).toDouble() / (this.duration * danmakuConfig.durationScale)
     val thisFullShowTime = this.offset + (thisCache.width / thisSpeed).toLong()
     if (other.offset in this.offset..thisFullShowTime) return true
 

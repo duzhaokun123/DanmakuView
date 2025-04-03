@@ -3,6 +3,7 @@ package com.duzhaokun123.danmakuview.sample
 import android.graphics.Color
 import android.text.TextUtils
 import android.util.Log
+import com.ctc.wstx.exc.WstxUnexpectedCharException
 import com.duzhaokun123.danmakuview.Value
 import com.duzhaokun123.danmakuview.danmaku.SimpleDanmakuFactory
 import com.duzhaokun123.danmakuview.danmaku.BiliSpecialDanmaku
@@ -30,7 +31,13 @@ class XMLDanmakuParser(inputStream: InputStream) : DanmakuParser {
         var startD = false
         var p: String? = null
         while (xmlEventReader.hasNext()) {
-            val event = xmlEventReader.nextEvent()
+            val event =
+                try {
+                    xmlEventReader.nextEvent()
+                } catch (e: WstxUnexpectedCharException) {
+                    Log.w(TAG, "parse error", e)
+                    continue
+                }
             when (event.eventType) {
                 XMLStreamConstants.START_ELEMENT -> {
                     with(event.asStartElement()) {
@@ -87,7 +94,7 @@ class XMLDanmakuParser(inputStream: InputStream) : DanmakuParser {
                     textArray[i] = jsonArray.getString(i)
                 }
             } catch (e: JSONException) {
-                e.printStackTrace()
+                Log.w(TAG, "parse error", e)
             }
             if (textArray != null && textArray.size >= 5 && textArray[4].isNullOrEmpty().not()) {
                 danmakuBili.text = textArray[4]!!

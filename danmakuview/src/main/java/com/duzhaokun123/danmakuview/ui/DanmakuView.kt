@@ -89,6 +89,12 @@ class DanmakuView @JvmOverloads constructor(
             setZOrderOnTop(value)
         }
 
+    var debugPaint = Paint().apply {
+        color = Color.WHITE
+        textSize = 40F
+        typeface = Typeface.MONOSPACE
+    }
+
     override fun surfaceCreated(holder: SurfaceHolder) {
         drawRunning = true
         launchDrawJob()
@@ -270,6 +276,7 @@ class DanmakuView @JvmOverloads constructor(
     }
 
     private fun drawDanamkus() {
+        val start = System.nanoTime()
         val maxLine =
             (drawHeight - danmakuConfig.marginTop - danmakuConfig.marginBottom) / danmakuConfig.lineHeight
         if (maxLine < 1) return
@@ -294,7 +301,7 @@ class DanmakuView @JvmOverloads constructor(
                 danmakus.forEach danmakuAction@{ danmaku ->
                     if (danmaku.visibility.not()) return@danmakuAction
 
-                    val duration = (danmaku.duration * danmakuConfig.durationCoeff)
+                    val duration = (danmaku.duration * danmakuConfig.durationScale)
                     val start = danmaku.offset
                     val end = (danmaku.offset + duration).toLong()
                     if (conductedTime in start..end) {
@@ -350,7 +357,7 @@ class DanmakuView @JvmOverloads constructor(
         showingDanmakus = willShowingDanmakus
 
         if (drawDebugInfo) {
-            drawDebug(canvas)
+            drawDebug(canvas, System.nanoTime() - start)
         }
 
         holder.unlockCanvasAndPost(canvas)
@@ -385,15 +392,11 @@ class DanmakuView @JvmOverloads constructor(
         }
     }
 
-    private val debugPaint by lazy {
-        Paint().apply {
-            color = Color.WHITE
-            textSize = 40F
-            typeface = Typeface.MONOSPACE
-        }
-    }
-
-    private fun drawDebug(canvas: Canvas) {
+    private fun drawDebug(canvas: Canvas, frameTimeNs: Long) {
+        canvas.drawText(
+            "frameTime = ${frameTimeNs / 1_000_000F} ms",
+            20F, drawHeight - 150F, debugPaint
+        )
         canvas.drawText(
             "conductedTimeNs = $conductedTimeNs, speed = $speed, size = ${drawWidth}x$drawHeight",
             20F, drawHeight - 100F, debugPaint

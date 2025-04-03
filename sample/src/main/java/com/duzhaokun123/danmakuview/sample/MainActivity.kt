@@ -3,7 +3,6 @@ package com.duzhaokun123.danmakuview.sample
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Typeface
-import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -15,8 +14,11 @@ import android.widget.PopupMenu
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.MenuRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.drawable.toDrawable
+import androidx.core.graphics.toColorInt
 import com.duzhaokun123.danmakuview.danmaku.R2LDanmaku
 import com.duzhaokun123.danmakuview.danmaku.TopDanmaku
+import com.duzhaokun123.danmakuview.getOrNew
 import com.duzhaokun123.danmakuview.interfaces.DanmakuParser
 import com.duzhaokun123.danmakuview.model.DanmakuConfig
 import com.duzhaokun123.danmakuview.model.Danmakus
@@ -35,7 +37,7 @@ class MainActivity : AppCompatActivity() {
     private val openBackgroundImage = registerForActivityResult(ActivityResultContracts.OpenDocument()) {
         it ?: return@registerForActivityResult
         val img = BitmapFactory.decodeStream(contentResolver.openInputStream(it))
-        baseBinding.root.background = BitmapDrawable(resources, img)
+        baseBinding.root.background = img.toDrawable(resources)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,20 +62,22 @@ class MainActivity : AppCompatActivity() {
         baseBinding.btnCleanCache.setOnClickListener { baseBinding.dv.cleanCache() }
         baseBinding.btnDrawOnce.setOnClickListener { baseBinding.dv.drawOnce() }
         baseBinding.sbSpeed.setOnSeekBarChangeListener(SimpleValueOnSeekBarChangeListener { value ->
-            baseBinding.dv.speed = (value - 200) / 100F
+            val speed = (value - 200) / 100F
+            baseBinding.dv.speed = speed
+            baseBinding.tvSpeed.text = speed.toString()
         })
-        baseBinding.sbDurationCoeff.setOnSeekBarChangeListener(SimpleValueOnSeekBarChangeListener { value ->
+        baseBinding.sbDurationScale.setOnSeekBarChangeListener(SimpleValueOnSeekBarChangeListener { value ->
             if (value != 0) {
-                val durationCoeff = value / 100F
-                baseBinding.dv.danmakuConfig.durationCoeff = durationCoeff
-                baseBinding.tvDurationCoeff.text = durationCoeff.toString()
+                val durationScale = value / 100F
+                baseBinding.dv.danmakuConfig.durationScale = durationScale
+                baseBinding.tvDurationScale.text = durationScale.toString()
             }
         })
-        baseBinding.sbTextSizeCoeff.setOnSeekBarChangeListener(SimpleValueOnSeekBarChangeListener { value ->
+        baseBinding.sbTextSizeScale.setOnSeekBarChangeListener(SimpleValueOnSeekBarChangeListener { value ->
             if (value != 0) {
-                val textSizeCoeff = value / 100F
-                baseBinding.dv.danmakuConfig.textSizeCoeff = textSizeCoeff
-                baseBinding.tvTextSizeCoeff.text = textSizeCoeff.toString()
+                val textSizeScale = value / 100F
+                baseBinding.dv.danmakuConfig.textSizeScale = textSizeScale
+                baseBinding.tvTextSizeScale.text = textSizeScale.toString()
             }
         })
         baseBinding.sbLineHeight.setOnSeekBarChangeListener(SimpleValueOnSeekBarChangeListener { value ->
@@ -135,6 +139,20 @@ class MainActivity : AppCompatActivity() {
                             })
                         })
                     }
+                    R.id._200k_danmaku -> {
+                        baseBinding.dv.debugPaint.color = Color.RED
+                        baseBinding.dv.parse {
+                            val danmakus = mutableMapOf<Int, Danmakus>()
+                            (1..200_000).forEach {
+                                danmakus.getOrNew(1).add(R2LDanmaku().apply {
+                                    offset = 1L + it
+                                    duration = 2000
+                                    text = "Danmaku"
+                                })
+                            }
+                            return@parse danmakus
+                        }
+                    }
                 }
                 true
             }
@@ -149,7 +167,7 @@ class MainActivity : AppCompatActivity() {
                                 addTextChangedListener(object : TextWatcher {
                                     override fun afterTextChanged(s: Editable?) {
                                         runCatching {
-                                            baseBinding.root.setBackgroundColor(Color.parseColor(s.toString()))
+                                            baseBinding.root.setBackgroundColor(s.toString().toColorInt())
                                         }
                                     }
 
@@ -193,11 +211,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun fullScreen() {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-            window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    or View.SYSTEM_UI_FLAG_FULLSCREEN
-                    or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
-        }
+        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
     }
 
     private fun showPopupMenu(

@@ -17,12 +17,12 @@ class DanmakuConfig {
     /**
      * 持续时间系数
      */
-    var durationCoeff = 1F
+    var durationScale = 1F
 
     /**
      * 字体大小系数
      */
-    var textSizeCoeff = 1F
+    var textSizeScale = 1F
 
     /**
      * 行高 (像素)

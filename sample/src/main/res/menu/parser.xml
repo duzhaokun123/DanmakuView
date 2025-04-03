@@ -15,4 +15,7 @@
     <item
         android:id="@+id/later_10s"
         android:title="later 10s" />
+    <item
+        android:id="@+id/_200k_danmaku"
+        android:title="200k danmaku" />
 </menu>

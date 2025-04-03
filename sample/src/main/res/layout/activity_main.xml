@@ -8,6 +8,11 @@
     tools:context=".MainActivity"
     tools:ignore="HardcodedText">
 
+    <com.duzhaokun123.danmakuview.ui.DanmakuView
+        android:id="@+id/dv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <com.google.android.flexbox.FlexboxLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -136,14 +141,22 @@
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
+            <TextView
+                android:id="@+id/tv_speed"
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text="1.0"
+                android:textColor="?attr/colorPrimaryVariant"
+                android:textSize="12sp" />
+
             <SeekBar
                 android:id="@+id/sb_speed"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:max="400"
                 android:progress="300"
-                android:progressBackgroundTint="?attr/colorOnPrimary"
-                tools:targetApi="lollipop" />
+                android:progressBackgroundTint="?attr/colorOnPrimary" />
         </LinearLayout>
 
         <LinearLayout
@@ -155,14 +168,14 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="duration coeff"
+                android:text="duration scale"
                 android:textAllCaps="true"
                 android:textColor="?attr/colorPrimary"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/tv_durationCoeff"
+                android:id="@+id/tv_durationScale"
                 android:layout_width="30dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
@@ -171,13 +184,12 @@
                 android:textSize="12sp" />
 
             <SeekBar
-                android:id="@+id/sb_durationCoeff"
+                android:id="@+id/sb_durationScale"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:max="200"
                 android:progress="100"
-                android:progressBackgroundTint="?attr/colorOnPrimary"
-                tools:targetApi="lollipop" />
+                android:progressBackgroundTint="?attr/colorOnPrimary" />
         </LinearLayout>
 
         <LinearLayout
@@ -189,14 +201,14 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="textSize coeff"
+                android:text="textSize scale"
                 android:textAllCaps="true"
                 android:textColor="?attr/colorPrimary"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/tv_textSizeCoeff"
+                android:id="@+id/tv_textSizeScale"
                 android:layout_width="30dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
@@ -205,13 +217,12 @@
                 android:textSize="12sp" />
 
             <SeekBar
-                android:id="@+id/sb_textSizeCoeff"
+                android:id="@+id/sb_textSizeScale"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:max="200"
                 android:progress="100"
-                android:progressBackgroundTint="?attr/colorOnPrimary"
-                tools:targetApi="lollipop" />
+                android:progressBackgroundTint="?attr/colorOnPrimary" />
         </LinearLayout>
 
         <LinearLayout
@@ -244,8 +255,7 @@
                 android:layout_height="wrap_content"
                 android:max="40"
                 android:progress="20"
-                android:progressBackgroundTint="?attr/colorOnPrimary"
-                tools:targetApi="lollipop" />
+                android:progressBackgroundTint="?attr/colorOnPrimary" />
         </LinearLayout>
 
         <LinearLayout
@@ -278,8 +288,7 @@
                 android:layout_height="wrap_content"
                 android:max="50"
                 android:progress="0"
-                android:progressBackgroundTint="?attr/colorOnPrimary"
-                tools:targetApi="lollipop" />
+                android:progressBackgroundTint="?attr/colorOnPrimary" />
         </LinearLayout>
 
         <LinearLayout
@@ -312,14 +321,7 @@
                 android:layout_height="wrap_content"
                 android:max="50"
                 android:progress="0"
-                android:progressBackgroundTint="?attr/colorOnPrimary"
-                tools:targetApi="lollipop" />
+                android:progressBackgroundTint="?attr/colorOnPrimary" />
         </LinearLayout>
     </com.google.android.flexbox.FlexboxLayout>
-
-    <com.duzhaokun123.danmakuview.ui.DanmakuView
-        android:id="@+id/dv"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
 </RelativeLayout>
