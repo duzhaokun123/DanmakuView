@@ -94,7 +94,7 @@ class DanmakuConfig {
     var maxRelativeHeight = 1F
 
     /**
-     * 也许你需要一些自己但弹幕类的特别设置
+     * 也许你需要一些自己的弹幕类的特别设置
      */
-    val custom = mutableMapOf<String, String>()
+    val custom = mutableMapOf<String, Any?>()
 }

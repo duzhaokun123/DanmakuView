@@ -44,10 +44,23 @@ class Danmakus : Collection<Danmaku> {
             if (last == null) {
                 last = danmaku
             }
-            if (last!!.offset < danmaku.offset)  {
+            if (last.offset < danmaku.offset)  {
                 last = danmaku
             }
         }
         return last
+    }
+
+    fun first(): Danmaku? {
+        var first: Danmaku? = null
+        forEach { danmaku ->
+            if (first == null) {
+                first = danmaku
+            }
+            if (first.offset > danmaku.offset)  {
+                first = danmaku
+            }
+        }
+        return first
     }
 }

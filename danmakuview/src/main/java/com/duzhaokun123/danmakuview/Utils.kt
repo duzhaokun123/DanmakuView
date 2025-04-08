@@ -21,8 +21,8 @@ fun Canvas.clean() {
 fun LineDanmaku.checkStaticLineDanmakuHit(
     other: Danmaku, danmakuConfig: DanmakuConfig
 ): Boolean {
-    val thisDanmakuStart = offset
-    val thisDanmakuEnd = offset + (duration * danmakuConfig.durationScale).toLong()
+    val thisDanmakuStart = this.offset
+    val thisDanmakuEnd = this.offset + (this.duration * danmakuConfig.durationScale).toLong()
     val otherDanmakuStart = other.offset
     val otherDanmakuEnd = other.offset + (other.duration * danmakuConfig.durationScale).toLong()
     return thisDanmakuStart in otherDanmakuStart..otherDanmakuEnd || otherDanmakuStart in thisDanmakuStart..thisDanmakuEnd
@@ -42,7 +42,7 @@ fun LineDanmaku.checkScrollLineDanmakuHit(
     if (this.offset in other.offset..otherFullShowTime) return true
 
     if (other.cache == null) other.onBuildCache(danmakuConfig)
-    val thisCache = cache ?: return false
+    val thisCache = this.cache ?: return false
     val thisSpeed =
         (drawWidth + thisCache.width).toDouble() / (this.duration * danmakuConfig.durationScale)
     val thisFullShowTime = this.offset + (thisCache.width / thisSpeed).toLong()

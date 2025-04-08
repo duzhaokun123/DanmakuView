@@ -283,7 +283,7 @@ class DanmakuView @JvmOverloads constructor(
     private fun drawDanamkus() {
         val start = System.nanoTime()
         var maxLine =
-            (((drawHeight - danmakuConfig.marginTop - danmakuConfig.marginBottom) * danmakuConfig.maxRelativeHeight)/ danmakuConfig.lineHeight).toInt()
+            (((drawHeight - danmakuConfig.marginTop - danmakuConfig.marginBottom) * danmakuConfig.maxRelativeHeight) / danmakuConfig.lineHeight).toInt()
         if (maxLine < 1) return
         maxLine = min(maxLine, danmakuConfig.maxLine)
 
@@ -305,7 +305,7 @@ class DanmakuView @JvmOverloads constructor(
         danmakus.forEach { (pool, danmakus) ->
             runCatching {
                 danmakus.forEach danmakuAction@{ danmaku ->
-                    if (danmaku.visibility.not()) return@danmakuAction
+                    if (danmaku.visible.not()) return@danmakuAction
 
                     val duration = (danmaku.duration * danmakuConfig.durationScale)
                     val start = danmaku.offset
@@ -322,11 +322,11 @@ class DanmakuView @JvmOverloads constructor(
         }
         willDrawDanmakus.removeAll { (danmaku, progress, pool) ->
             val re: Boolean
-            val olsShowingDanmaku = findOldShowingDanmaku(oldShowingDanmakus, danmaku, pool)
-            re = if (olsShowingDanmaku != null) {
+            val oldShowingDanmaku = findOldShowingDanmaku(oldShowingDanmakus, danmaku, pool)
+            re = if (oldShowingDanmaku != null) {
                 drawDanmaku(
                     canvas, maxLine,
-                    danmaku, progress, olsShowingDanmaku.line, pool,
+                    danmaku, progress, oldShowingDanmaku.line, pool,
                     willShowingDanmakus
                 )
                 true
@@ -372,12 +372,12 @@ class DanmakuView @JvmOverloads constructor(
     private fun findOldShowingDanmaku(
         oldShowingDanmakus: List<ShowingDanmakuInfo>, danmaku: Danmaku, pool: Int
     ): ShowingDanmakuInfo? {
-        var re: ShowingDanmakuInfo? = null
         oldShowingDanmakus.forEach { info ->
-            if (danmaku === info.danmaku && pool == info.pool)
-                re = info
+            if (danmaku === info.danmaku && pool == info.pool) {
+                return info
+            }
         }
-        return re
+        return null
     }
 
     private fun drawDanmaku(
@@ -389,7 +389,7 @@ class DanmakuView @JvmOverloads constructor(
             danmaku.onDraw(canvas, drawWidth, drawHeight, progress, danmakuConfig, 0)?.let {
                 willShowingDanmakus.add(ShowingDanmakuInfo(danmaku, it, 0, progress, pool))
             }
-        } else if (line < maxLine || danmakuConfig.allowOverlap) {
+        } else if (line <= maxLine || danmakuConfig.allowOverlap) {
             var drawLine = line % maxLine
             if (drawLine == 0) drawLine = maxLine
             danmaku.onDraw(canvas, drawWidth, drawHeight, progress, danmakuConfig, drawLine)?.let {

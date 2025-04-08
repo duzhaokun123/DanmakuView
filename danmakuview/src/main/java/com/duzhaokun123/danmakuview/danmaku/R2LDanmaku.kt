@@ -5,10 +5,6 @@ import com.duzhaokun123.danmakuview.checkScrollLineDanmakuHit
 import com.duzhaokun123.danmakuview.model.DanmakuConfig
 
 class R2LDanmaku : LineDanmaku() {
-    init {
-        duration = 10000
-    }
-
     override fun onDraw(
         canvas: Canvas, drawWidth: Int, drawHeight: Int,
         progress: Float, danmakuConfig: DanmakuConfig, line: Int

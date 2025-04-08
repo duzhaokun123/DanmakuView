@@ -6,11 +6,37 @@ import com.duzhaokun123.danmakuview.component1
 import com.duzhaokun123.danmakuview.component2
 import com.duzhaokun123.danmakuview.isDark
 import com.duzhaokun123.danmakuview.model.DanmakuConfig
+import kotlin.math.PI
+import kotlin.math.cos
 
+/**
+ * 这只是一个简单的高级弹幕(关键帧弹幕)
+ * 没有透视效果
+ * 如果你需要一些非线性插值变换颜色缩放什么的 自己写
+ */
 class SpecialDanmaku : Danmaku() {
+    /**
+     * [point] 左上角坐标 相对位置 [0.0, 1.0]
+     * [alpha] 透明度 [0, 255]
+     * [rotationX], [rotationY], [rotationZ] XYZ 旋转角度
+     *  其中 rotationX, rotationY 是伪 3D 旋转 毕竟这不是 3D 引擎
+     * TODO: 解释旋转方向
+     * 屏幕坐标系
+     *  从左向右 +x
+     *  从上向下 +y
+     *  从内向外 +z
+     */
+    data class Frame(
+        val point: PointF,
+        val alpha: Int,
+        val rotationX: Float,
+        val rotationY: Float,
+        val rotationZ: Float,
+    )
+
     companion object {
-        val defaultStartFrame = Triple(PointF(0F, 0F), 0F, Value.ALPHA_MAX)
-        val defaultEndFrame = Triple(PointF(1F, 1F), 0F, Value.ALPHA_MAX)
+        val defaultStartFrame = Frame(PointF(0F, 0F), Value.ALPHA_MAX, 0F, 0F, 0F)
+        val defaultEndFrame = Frame(PointF(1F, 1F), Value.ALPHA_MAX, 0F, 0F, 0F)
     }
 
     var lines: Array<String>? = null
@@ -20,10 +46,10 @@ class SpecialDanmaku : Danmaku() {
     var drawMode = DanmakuConfig.DrawMode.DEFAULT
 
     /**
-     * K: 进度
-     * V: (相对位置, Z 轴旋转(度), Alpha)
+     * K: 进度 [0, 1]
+     * V: 帧 见 [Frame]
      */
-    var keyframes = mutableMapOf<Float, Triple<PointF, Float, Int>>()
+    var keyframes = mutableMapOf<Float, Frame>()
 
     override val cacheable = true
 
@@ -48,7 +74,7 @@ class SpecialDanmaku : Danmaku() {
                 else -> Unit
             }
         }
-        val stokePaint = when(drawMode){
+        val stokePaint = when(drawMode) {
             DanmakuConfig.DrawMode.STROKE,
                 DanmakuConfig.DrawMode.SHADOW_STROKE ->
                 Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -95,7 +121,7 @@ class SpecialDanmaku : Danmaku() {
         cache = bitmap
     }
 
-    private val bitmapPaint by lazy { Paint() }
+    private val bitmapPaint = Paint()
 
     override fun onDraw(
         canvas: Canvas,
@@ -104,7 +130,6 @@ class SpecialDanmaku : Danmaku() {
     ): RectF? {
         if (cache == null) onBuildCache(danmakuConfig)
         val bitmap = cache ?: return null
-
         var lastKeyframeP = 0F
         var nextKeyframeP = 1F
         var lastFrame = defaultStartFrame
@@ -120,33 +145,32 @@ class SpecialDanmaku : Danmaku() {
             }
         }
 
-        val (lastPoint, lastZR, lastAlpha) = lastFrame
+        val (lastPoint, lastAlpha, lastRX, lastRY, lastRZ) = lastFrame
         val (lastX, lastY) = lastPoint
-        val (nextPoint, nextZR, nextAlpha) = nextFrame
+        val (nextPoint, nextAlpha, nextRX, nextRY, nextRZ) = nextFrame
         val (nextX, nextY) = nextPoint
-        val mProgress = (progress - lastKeyframeP) / (nextKeyframeP - lastKeyframeP)
+        var mProgress = (progress - lastKeyframeP) / (nextKeyframeP - lastKeyframeP)
+        if (mProgress.isNaN()) mProgress = 1F
 
         val x = lastX + (nextX - lastX) * mProgress
         val y = lastY + (nextY - lastY) * mProgress
-        val zr = lastZR + (nextZR - lastZR) * mProgress
         val alpha = (lastAlpha + (nextAlpha - lastAlpha) * mProgress).toInt()
+        val rx = lastRX + (nextRX - lastRX) * mProgress
+        val ry = lastRY + (nextRY - lastRY) * mProgress
+        val rz = lastRZ + (nextRZ - lastRZ) * mProgress
 
         val drawX = x * drawWidth
         val drawY = y * drawHeight
 
         bitmapPaint.alpha = alpha
-        return if (zr == 0F) {
-            canvas.drawBitmap(bitmap, drawX, drawY, bitmapPaint)
-            RectF(drawX, drawY, drawX + bitmap.width, drawY + bitmap.height)
-        } else {
-            val matrix = Matrix()
-            matrix.postRotate(zr)
-            matrix.postTranslate(drawX, drawY)
-            canvas.drawBitmap(bitmap, matrix, bitmapPaint)
-            val rect = RectF(0f, 0f, bitmap.width.toFloat(), bitmap.height.toFloat())
-            matrix.mapRect(rect)
-            rect
-        }
+        val matrix = Matrix()
+        matrix.postScale(cos((rx * PI / 180)).toFloat(), cos(ry * PI / 180).toFloat())
+        matrix.postRotate(rz)
+        matrix.postTranslate(drawX, drawY)
+        canvas.drawBitmap(bitmap, matrix, bitmapPaint)
+        val rect = RectF(0f, 0f, bitmap.width.toFloat(), bitmap.height.toFloat())
+        matrix.mapRect(rect)
+        return rect
     }
 
     fun fillText() {

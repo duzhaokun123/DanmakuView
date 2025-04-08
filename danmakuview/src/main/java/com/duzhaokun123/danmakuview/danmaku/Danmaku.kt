@@ -7,7 +7,7 @@ import com.duzhaokun123.danmakuview.soft
 
 abstract class Danmaku {
     /**
-     * 偏移时间
+     * 偏移时间(毫秒)
      */
     var offset = 0L
 
@@ -69,7 +69,7 @@ abstract class Danmaku {
     /**
      * 可见性
      */
-    var visibility = true
+    var visible = true
 
     var tag: Any? = null
 
