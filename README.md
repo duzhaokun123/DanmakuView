@@ -10,7 +10,9 @@
 
 ## 效果
 
-[sample.mp4](art/sample.mp4)
+github 不能内联 video 标签 也不能引用存储库的视频资源
+
+所以 自己看 [art/sample.mp4](art/sample.mp4)
 
 ## BUG
 
