@@ -263,7 +263,10 @@ class DanmakuView @JvmOverloads constructor(
                 }
                 if (isDestroyed) break
                 if (drawRunning) {
-                    drawDanamkus()
+                    runCatching {
+                        // 静默失败 不好
+                        drawDanamkus()
+                    }
                 }
             }
             drawThread = null
@@ -303,20 +306,18 @@ class DanmakuView @JvmOverloads constructor(
         val willDrawDanmakus = mutableListOf<Triple<Danmaku, Float, Int>>()
         val conductedTime = conductedTimeMs
         danmakus.forEach { (pool, danmakus) ->
-            runCatching {
-                danmakus.forEach danmakuAction@{ danmaku ->
-                    if (danmaku.visible.not()) return@danmakuAction
+            danmakus.forEach danmakuAction@{ danmaku ->
+                if (danmaku.visible.not()) return@danmakuAction
 
-                    val duration = (danmaku.duration * danmakuConfig.durationScale)
-                    val start = danmaku.offset
-                    val end = (danmaku.offset + duration).toLong()
-                    if (conductedTime in start..end) {
-                        for (blocker in danmakuConfig.blockers) {
-                            if (blocker.shouldBlock(danmaku, pool)) return@danmakuAction
-                        }
-                        val progress = (conductedTime - start) / duration
-                        willDrawDanmakus.add(Triple(danmaku, progress, pool))
+                val duration = (danmaku.duration * danmakuConfig.durationScale)
+                val start = danmaku.offset
+                val end = (danmaku.offset + duration).toLong()
+                if (conductedTime in start..end) {
+                    for (blocker in danmakuConfig.blockers) {
+                        if (blocker.shouldBlock(danmaku, pool)) return@danmakuAction
                     }
+                    val progress = (conductedTime - start) / duration
+                    willDrawDanmakus.add(Triple(danmaku, progress, pool))
                 }
             }
         }
